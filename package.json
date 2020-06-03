@@ -1,0 +1,6 @@
+{
+  "name": "@elements/application",
+  "description": "The elements web framework.",
+  "version": "1.0.0-alpha1",
+  "browser": {}
+}
