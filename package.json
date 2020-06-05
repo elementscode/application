@@ -2,5 +2,11 @@
   "name": "@elements/application",
   "description": "The elements web framework.",
   "version": "1.0.0-alpha1",
-  "browser": {}
+  "license": "MIT",
+  "browser": {},
+  "dependencies": {
+    "@elements/runtime": "1.0.0-alpha6",
+    "@types/node": "^14.0.9",
+    "mime": "^2.4.6"
+  }
 }

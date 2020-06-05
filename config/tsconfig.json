@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "inlineSources": true,
+    "noEmitOnError": true,
+    "allowJs": false,
+    "declaration": true,
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "lib": ["es2017", "dom"],
+    "noImplicitAny": false,
+    "outDir": ".elements/dist",
+    "preserveConstEnums": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "target": "es5"
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
