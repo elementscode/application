@@ -4,6 +4,7 @@ import * as http from 'http';
 import * as mime from 'mime';
 import { URL } from 'url';
 import { IDistJson, IDistJsonFile, IDistJsonTarget } from '@elements/runtime';
+import { IMiddleware } from './types';
 
 // 6 months asset expiry
 const maxAssetAgeInSeconds = 24 * 60 * 60 * 30 * 6
@@ -11,7 +12,7 @@ const maxAssetAgeInSeconds = 24 * 60 * 60 * 30 * 6
 export interface IAssetMiddlewareOpts {
 }
 
-export class AssetMiddleware {
+export class AssetMiddleware implements IMiddleware {
   private opts: IAssetMiddlewareOpts;
   private distJson: IDistJson;
 
