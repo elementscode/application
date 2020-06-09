@@ -5,3 +5,9 @@ export type MiddlewareFunc = (req: http.IncomingMessage, res: http.ServerRespons
 export interface IMiddleware {
   run(req: http.IncomingMessage, res: http.ServerResponse, next: () => Promise<void>): Promise<void>;
 }
+
+export interface IMetaTag {
+  name?: string;
+  httpEquiv?: string;
+  content: string;
+}
