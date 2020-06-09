@@ -3,7 +3,12 @@
   "description": "The elements web framework.",
   "version": "1.0.0-alpha1",
   "license": "MIT",
-  "browser": {},
+  "browser": {
+    "./asset_middleware": false,
+    "./server": false,
+    "./types": false,
+    "./start": "./start-browser"
+  },
   "dependencies": {
     "@elements/runtime": "1.0.0-alpha6",
     "mime": "^2.4.6"

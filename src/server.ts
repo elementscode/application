@@ -36,6 +36,10 @@ export class Server {
   public async run(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
     await this.runMiddleware(req, res);
 
+    if (res.writableEnded) {
+      return;
+    }
+
     let page = new Page({
       req: req,
       res: res,
@@ -89,7 +93,7 @@ export class Server {
   }
 }
 
-export function listener(opts?: IServerOpts): http.RequestListener {
+export function createServerListener(opts?: IServerOpts): http.RequestListener {
   let server = new Server(opts);
   return server.run.bind(server);
 }
