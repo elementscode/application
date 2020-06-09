@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as path from 'path';
 import * as http from 'http';
 import * as React from 'react';
@@ -7,6 +8,7 @@ import { indent } from './utils';
 import { IMetaTag } from './types';
 
 export interface IPageOpts {
+  req: http.IncomingMessage;
   res: http.ServerResponse;
   distJson: IDistJson;
 }
@@ -15,8 +17,8 @@ let htmlTemplate = `
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
     {title}
+    <meta charset="utf-8">
     {meta}
     {style}
     {code}
@@ -64,14 +66,34 @@ export class Page {
   }
 
   public render(importPath: string, data: any = {}) {
+    let serverETag = this.getETag(importPath, data);
+    let clientETag = this._opts.req.headers['if-none-match'];
+
+    if (clientETag == serverETag) {
+      this._opts.res.statusCode = 304;
+      this._opts.res.end();
+      return;
+    }
+
+    this._opts.res.setHeader('ETag', serverETag);
     this._opts.res.setHeader('Content-Type', 'text/html');
     this._opts.res.write(this.getHtml(importPath, data));
     this._opts.res.end();
   }
 
+  protected getETag(importPath: string, data: any = {}): string {
+    let rootBundle: IDistJsonBundle = this._opts.distJson.targets['browser'].bundles['boot'];
+    let pageBundle: IDistJsonBundle = this._opts.distJson.targets['browser'].bundles[importPath];
+    let hasher = crypto.createHash('sha512');
+    hasher.write(rootBundle.version);
+    hasher.write(pageBundle.version);
+    hasher.write(JSON.stringify(data));
+    return hasher.digest('hex').slice(0, 10);
+  }
+
   protected getHtml(importPath: string, data: any = {}): string {
     let distRelPath: string = this._opts.distJson.targets['main'].sources[importPath];
-    let rootBundle: IDistJsonBundle = this._opts.distJson.targets['browser'].bundles['root'];
+    let rootBundle: IDistJsonBundle = this._opts.distJson.targets['browser'].bundles['boot'];
     let pageBundle: IDistJsonBundle = this._opts.distJson.targets['browser'].bundles[importPath];
 
     if (!rootBundle) {
@@ -113,7 +135,6 @@ export class Page {
       .replace('{view}', indent(view, 4, true));
   }
 
-  // TODO inherit from app, or router, if not defined here.
   protected getTitle(): string {
     return this._title;
   }

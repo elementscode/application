@@ -37,6 +37,7 @@ export class Server {
     await this.runMiddleware(req, res);
 
     let page = new Page({
+      req: req,
       res: res,
       distJson: this._distJson,
     });
