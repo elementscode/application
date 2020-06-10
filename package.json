@@ -5,21 +5,33 @@
   "license": "MIT",
   "browser": {
     "./asset_middleware": false,
+    "./crypto": false,
+    "./headers": false,
     "./server": false,
-    "./types": false,
-    "./start": "./start-browser"
+    "./start": "./start-browser",
+    "./types": false
   },
   "dependencies": {
     "@elements/runtime": "1.0.0-alpha6",
-    "mime": "^2.4.6"
+    "@elements/utils": "1.0.0",
+    "base64-url": "2.3.3",
+    "debug": "4.1.1",
+    "mime": "2.4.6",
+    "path-to-regexp": "6.1.0",
+    "url-parse": "1.4.7",
+    "uuid": "8.1.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.9",
     "@types/react": "^16.9.35",
-    "@types/react-dom": "^16.9.8"
+    "@types/react-dom": "^16.9.8",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
   },
   "peerDependencies": {
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
+  },
+  "scripts": {
   }
 }

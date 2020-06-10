@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as http from 'http';
 import { IDistJson } from '@elements/runtime';
-import { AssetMiddleware } from './asset_middleware';
+import { AssetMiddleware } from './asset-middleware';
 import { MiddlewareFunc, IMiddleware, IMetaTag } from './types';
 import { Page } from './page';
 

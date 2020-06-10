@@ -1,23 +1,36 @@
-/**
- * Indent all lines in a string by some amount, optionally skipping the first
- * line.
- */
-export function indent(value: string, amount: number, skipFirstLine: boolean = false): string {
-  let spaces: string = '';
+import * as path from 'path';
+import * as createDebugger from 'debug';
 
-  for (let idx = 0; idx < amount; idx++) {
-    spaces += ' ';
+export let debug = createDebugger('@elements/application');
+
+/**
+ * Given a cookie string like one from req.headers['cookie'] or document.cookie,
+ * extracts the cookie value with the specific key, or undefined if that cookie
+ * doesn't exist in the string.
+ */
+export function extractCookie(cookies: string | string[] | undefined): string | undefined {
+  let re = new RegExp("session=([^;]+)");
+  let match;
+
+  if (typeof cookies === 'string') {
+    match = cookies.match(re);
+
+    if (match) {
+      return match[1];
+    }
   }
 
-  return value
-    .split('\n')
-    .map((line, index) => {
-      if (skipFirstLine && index == 0) {
-        return line;
+  else if (Array.isArray(cookies)) {
+    for (let idx = 0; idx < cookies.length; idx++) {
+      match = cookies[idx].match(re);
+
+      if (match) {
+        return match[1];
       }
+    }
+  }
 
-      return spaces + line;
-    })
-    .join('\n');
+  else {
+    return undefined;
+  }
 }
-
