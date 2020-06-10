@@ -1,5 +1,5 @@
-import * as http from 'http';
-import { ISessionOptions } from './types';
+import { ServerRequest } from './server-request';
+import { ISessionOptions, IMiddleware } from './types';
 import { Session } from './session';
 import { debug } from './utils';
 
@@ -10,12 +10,14 @@ declare module 'http' {
 }
 
 export class SessionMiddleware implements IMiddleware {
-  public constructor(opts: ISessionOpts) {
+  private opts: ISessionOptions;
+
+  public constructor(opts: ISessionOptions) {
     this.opts = opts;
   }
 
-  public async run(req: http.IncomingMessage, res: http.ServerResponse, next: () => Promise<void>): Promise<void> {
-    req.session = Session.createFromHttp(req, res, opts);
+  public async run(req: ServerRequest, next: () => Promise<void>): Promise<void> {
+    req.session = Session.createFromHttp(req.req, req.res, this.opts);
     debug('create session %s', req.session.id);
     return next();
   }

@@ -1,100 +1,106 @@
-import * as path from 'path';
 import * as fs from 'fs';
-import * as http from 'http';
+import * as path from 'path';
 import * as mime from 'mime';
-import { URL } from 'url';
 import { IDistJson, IDistJsonFile, IDistJsonTarget } from '@elements/runtime';
-import { IMiddleware } from './types';
+import { ServerRequest } from './server-request';
+import { debug } from './utils';
+import {
+  IRequest,
+} from './types';
+
+export interface IAssetMiddlewareOpts {
+  distJson: IDistJson;
+}
 
 // 6 months asset expiry
 const maxAssetAgeInSeconds = 24 * 60 * 60 * 30 * 6
 
-export interface IAssetMiddlewareOpts {
-}
+// pull the target name out of the url path
+const reTargetFromPath = /^targets\/(\w+)/;
 
-export class AssetMiddleware implements IMiddleware {
-  private opts: IAssetMiddlewareOpts;
-  private distJson: IDistJson;
+export class AssetMiddleware {
+  distJson: IDistJson;
 
-  public constructor(opts: IAssetMiddlewareOpts = {}) {
-    this.opts = opts;
-    this.load();
+  assetUrl: string;
+
+  constructor(opts: IAssetMiddlewareOpts) {
+    this.distJson = opts.distJson;
+
+    if (typeof this.distJson !== 'object') {
+      throw new Error(`AssetMiddleware requires the 'distJson' option but got '${typeof this.distJson}' instead.`);
+    }
+
+    this.assetUrl = this.distJson.assetUrl || '/assets';
   }
 
-  public async run(req: http.IncomingMessage, res: http.ServerResponse, next: () => Promise<void>): Promise<void> {
+  async run(req: ServerRequest, next: () => Promise<void>): Promise<void> {
     if (!this.isAssetRequest(req)) {
       return next();
     }
 
-    let url: string = req.url.split(/#|\?/)[0];
-    let assetFilePath: string = url.replace(this.distJson.assetUrl, this.distJson.assetPath).replace('/', path.sep);
-    let reAssetTarget: RegExp = new RegExp(`^${this.distJson.assetPath}${path.sep}(\\w+)`);
-    let match: any[] = assetFilePath.match(reAssetTarget);
+    let filePath = req.url.replace(this.assetUrl + '/', '');
+    let match: any[] = filePath.match(reTargetFromPath);
     let target: string;
+    let distJsonFile: IDistJsonFile;
+    let etag: string
 
     if (!match) {
-      res.statusCode = 404;
-      res.end();
-      return;
+      debug('target regex no match');
+      req.status(404);
+      req.end();
+      return
     } else {
       target = match[1];
     }
 
     if (!this.distJson.targets[target]) {
-      res.statusCode = 404;
-      res.end();
+      debug('target %s not in dist.json', target);
+      req.status(404);
+      req.end();
       return;
     }
 
-    let distJsonFile: IDistJsonFile = this.distJson.targets[target].files[assetFilePath];
+    distJsonFile = this.distJson.targets[target].files[filePath];
     if (!distJsonFile) {
-      res.statusCode = 404;
-      res.end();
+      debug('dist.json target %s no file %s', target, filePath);
+      req.status(404);
+      req.end();
       return;
     }
 
-    let etag: string = req.headers['if-none-match'] as string;
+    etag = req.header('If-None-Match') as string;
     if (etag && etag == distJsonFile.version) {
-      res.statusCode = 304;
-      res.end();
+      req.status(304);
+      req.end();
       return;
     }
 
-    res.statusCode = 200;
-    res.setHeader('Content-Type', mime.getType(assetFilePath));
-    res.setHeader('ETag', distJsonFile.version);
-    res.setHeader('Cache-Control', `max-age=${maxAssetAgeInSeconds}`);
+    req.status(200);
+    req.header('Content-Type', mime.getType(filePath));
+    req.header('ETag', distJsonFile.version);
+    req.header('Cache-Control', `max-age=${maxAssetAgeInSeconds}`);
 
-    if (req.method === 'HEAD') {
-      res.end();
+    if (req.method == 'HEAD') {
+      req.end();
       return;
     }
 
-    if (this.shouldServeGzippedAsset(req, assetFilePath, target)) {
-      let gzippedAssetFile = this.distJson.targets[target].files[assetFilePath + '.gz'];
-      res.setHeader('Content-Encoding', 'gzip');
-      let bytes = fs.readFileSync(assetFilePath + '.gz', { encoding: null });
-      res.write(bytes);
-      res.end();
+    if (this.shouldServeGzippedAsset(req, filePath, target)) {
+      let gzippedAssetFile = this.distJson.targets[target].files[filePath + '.gz'];
+      req.header('Content-Encoding', 'gzip');
+      let bytes = fs.readFileSync(filePath + '.gz', { encoding: null });
+      req.write(bytes);
+      req.end();
       return;
     } else {
-      let bytes = fs.readFileSync(assetFilePath, { encoding: null });
-      res.write(bytes);
-      res.end();
+      let bytes = fs.readFileSync(filePath, { encoding: null });
+      req.write(bytes);
       return;
     }
   }
 
-  public load() {
-    this.distJson = JSON.parse(fs.readFileSync('dist.json', 'utf8'))
-  }
-
-  protected isAssetRequest(req: http.IncomingMessage): boolean {
-    return (req.method === 'GET' || req.method === 'HEAD') && req.url.startsWith(this.distJson.assetUrl);
-  }
-
-  protected shouldServeGzippedAsset(req: http.IncomingMessage, assetFilePath: string, target: string): boolean {
-    let acceptEncoding: string = req.headers['accept-encoding'] as string;
+  shouldServeGzippedAsset(req: ServerRequest, filePath: string, target: string): boolean {
+    let acceptEncoding: string = req.header('Accept-Encoding') as string;
 
     if (acceptEncoding && /gzip/.test(acceptEncoding)) {
       let distJsonTarget: IDistJsonTarget = this.distJson.targets[target];
@@ -103,11 +109,15 @@ export class AssetMiddleware implements IMiddleware {
         return false;
       }
 
-      if (distJsonTarget.files[assetFilePath + '.gz']) {
+      if (distJsonTarget.files[filePath + '.gz']) {
         return true;
       }
     }
 
     return false;
+  }
+
+  isAssetRequest(req: ServerRequest): boolean {
+    return (req.method == 'GET' || req.method == 'HEAD') && req.url.startsWith(this.assetUrl);
   }
 }

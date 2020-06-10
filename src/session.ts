@@ -1,14 +1,15 @@
 import * as http from 'http';
 import * as uuid from 'uuid';
+import { 
+  withDefaultValue,
+  getUtcTimeNow,
+  getUtcDate,
+} from '@elements/utils';
 import { sign, verify } from './crypto';
 import * as base64Url from 'base64-url';
 import { ISessionOptions } from './types';
 import {
   debug,
-  withDefaultValue,
-  getUtcTimeNow,
-  getUtcDate,
-  extractCookie,
 } from './utils';
 import { onBeforeSendHeaders } from './headers';
 
@@ -78,14 +79,14 @@ export class Session {
   /**
    * Constructs a new Session instance.
    */
-  public constructor(opts: ISessionOptions) {
+  public constructor(opts: ISessionOptions = {}) {
     this.key = opts.key || 'elements_session';
     this.id = this.createId();
     this.signatureVerified = true;
     this.csrf = '';
     this.loggedInExpires = opts.loggedInExpires;
     this.loggedOutExpires = opts.loggedOutExpires;
-    this.password = opts.password;
+    this.password = opts.password || 'p@ssw0rd!!';
     this.setExpiresTime();
     this.touch();
   }
@@ -345,6 +346,7 @@ export class Session {
     let session = new Session(opts);
     session['id'] = deserialized['id'];
     session['userId'] = deserialized['userId'];
+    session['userHandle'] = deserialized['userHandle'];
     session['csrf'] = deserialized['csrf'];
     session['expires'] = deserialized['expires'];
     session['timestamp'] = deserialized['timestamp'];
@@ -367,5 +369,37 @@ export class Session {
     let session = Session.createFromCookie(cookie, opts);
     onBeforeSendHeaders(res, () => session.setCookieOnHttpResponse(res));
     return session;
+  }
+}
+
+/**
+ * Given a cookie string like one from req.headers['cookie'] or document.cookie,
+ * extracts the cookie value with the specific key, or undefined if that cookie
+ * doesn't exist in the string.
+ */
+export function extractCookie(cookies: string | string[] | undefined): string | undefined {
+  let re = new RegExp("session=([^;]+)");
+  let match;
+
+  if (typeof cookies === 'string') {
+    match = cookies.match(re);
+
+    if (match) {
+      return match[1];
+    }
+  }
+
+  else if (Array.isArray(cookies)) {
+    for (let idx = 0; idx < cookies.length; idx++) {
+      match = cookies[idx].match(re);
+
+      if (match) {
+        return match[1];
+      }
+    }
+  }
+
+  else {
+    return undefined;
   }
 }
