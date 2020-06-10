@@ -48,6 +48,7 @@ const HEARTBEAT_INTERVAL = 60000; // 60 seconds
 const methodColor = 165;
 const successColor = 2;
 const errColor = 1;
+const warnColor = 172;
 const subtleColor = 8;
 const userIdColor = 3;
 const httpColor = 32;
@@ -99,6 +100,8 @@ export class Server {
   public async start(callback?: () => void): Promise<void> {
     debug('start');
 
+    // XXX can we pass http options directly from config here? and then use a
+    // default value?
     this.httpServer.listen(this.opts.port, () => {
       let msg = `elements is listening at ${this.url()}.`;
       this.logger.success(msg);
@@ -265,7 +268,7 @@ export class Server {
     timer.start();
 
     let session = Session.createFromHttp(req, res, {
-      // FIXME get from config.
+      // FIXME get from config with default value.
       password: 'p@ssw0rd!',
     });
 
@@ -291,11 +294,17 @@ export class Server {
       await this.middleware.run(request);
       timer.stop();
 
+      let statusColor: number;
+
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        logger.log('%s %s', req.url, color('(' + res.statusCode + ' - ' + timer.toString() + ')', successColor));
+        statusColor = successColor;
+      } else if (res.statusCode >= 300 && res.statusCode < 400) {
+        statusColor = warnColor;
       } else {
-        logger.log('%s %s', req.url, color('(' + res.statusCode + ' - ' + timer.toString() + ')', errColor));
+        statusColor = errColor;
       }
+
+      logger.log('%s %s', req.url, color('(' + res.statusCode + ' - ' + timer.toString() + ')', statusColor));
     } catch(err) {
       timer.stop();
       logger.log('\n%s', indent(err.stack, 2));

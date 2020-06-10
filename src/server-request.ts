@@ -1,9 +1,10 @@
 import * as path from 'path';
 import * as http from 'http';
+import * as crypto from 'crypto';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import * as ParsedUrl from 'url-parse';
-import { IDistJson } from '@elements/runtime';
+import { IDistJson, IDistJsonBundle } from '@elements/runtime';
 import {
   indent,
   capitalize,
@@ -25,8 +26,8 @@ let htmlTemplate = `
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
     {title}
+    <meta charset="utf-8">
     {meta}
     {style}
     {code}
@@ -52,7 +53,7 @@ export class ServerRequest implements IRequest {
   public res?: http.ServerResponse;
   public session: Session;
   public logger: Logger;
-  public params: {[key: string]: any};
+  public params: Map<any, any>;
   public parsedUrl: ParsedUrl;
   
   private _app: Application;
@@ -145,14 +146,36 @@ export class ServerRequest implements IRequest {
     this.end();
   }
 
-  render<T = any>(importPath: string, attrs: T) {
+  render<T = any>(importPath: string, data: T = {} as any) {
     debug('render %s', importPath);
+
+    // etag caching
+    let serverETag = this.getETag(importPath, data);
+    let clientETag = this.header('If-None-Match');
+    if (clientETag == serverETag) {
+      this.status(304);
+      this.end();
+      return;
+    }
+
+    // render page
+    this.header('ETag', serverETag);
     this.header('Content-Type', 'text/html');
-    this.write(this.getHtml<T>(importPath, attrs));
+    this.write(this.getHtml<T>(importPath, data));
     this.end();
   }
 
-  private getHtml<T = any>(vpath: string, attrs: T = {} as any): string {
+  protected getETag(importPath: string, data: any = {}): string {
+    let rootBundle: IDistJsonBundle = this._distJson.targets['browser'].bundles['boot'];
+    let pageBundle: IDistJsonBundle = this._distJson.targets['browser'].bundles[importPath];
+    let hasher = crypto.createHash('sha512');
+    hasher.write(rootBundle.version);
+    hasher.write(pageBundle.version);
+    hasher.write(JSON.stringify(data));
+    return hasher.digest('hex').slice(0, 10);
+  }
+
+  protected getHtml<T = any>(vpath: string, data: T = {} as any): string {
     let distRelPath: string = this._distJson.targets['main'].sources[vpath];
     if (!distRelPath) {
       throw new Error(`${vpath} not found in dist.json`);
@@ -163,17 +186,17 @@ export class ServerRequest implements IRequest {
     let bootBundle = this._distJson.targets['browser'].bundles['boot'];
 
     let cssTags: string[];
-    cssTags = bootBundle.style.map(url => `<link rel="stylesheet" href="${url}">`);
-    cssTags = cssTags.concat(pageBundle.style.map(url => `<link rel="stylesheet" href="${url}">`));
+    cssTags = bootBundle.style.map(file => `<link rel="stylesheet" href="${file.url}">`);
+    cssTags = cssTags.concat(pageBundle.style.map(file => `<link rel="stylesheet" href="${file.url}">`));
 
     let scriptTags: string[];
-    scriptTags = bootBundle.code.map(url => `<script type="text/javascript" src="${url}"></script>`)
-    scriptTags = scriptTags.concat(pageBundle.code.map(url => `<script type="text/javascript" src="${url}"></script>`));
+    scriptTags = bootBundle.code.map(file => `<script type="text/javascript" src="${file.url}"></script>`)
+    scriptTags = scriptTags.concat(pageBundle.code.map(file => `<script type="text/javascript" src="${file.url}"></script>`));
 
     let defaultMetaTags: IMetaTag[] = [
       { name: 'description', content: this.description() },
       { name: 'elements:view', content: vpath },
-      { name: 'elements:data', content: Buffer.from(JSON.stringify(attrs)).toString('base64') }
+      { name: 'elements:data', content: Buffer.from(JSON.stringify(data)).toString('base64') }
     ];
 
     let metaTags: string;
@@ -186,7 +209,7 @@ export class ServerRequest implements IRequest {
     let viewFilePath = path.join(process.cwd(), distRelPath);
     let exports = require(viewFilePath);
     let view = exports.default;
-    let el = React.createElement(view, attrs);
+    let el = React.createElement(view, data);
     let body = ReactDOMServer.renderToString(el);
 
     let html: string = htmlTemplate;

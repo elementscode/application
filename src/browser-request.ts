@@ -23,7 +23,7 @@ export interface IBrowserRequestOpts {
 export class BrowserRequest implements IRequest {
   public session: Session;
   public url: string
-  public params: {[key: string]: string};
+  public params: Map<any, any>;
   public parsedUrl: ParsedUrl;
 
   private _app: Application;

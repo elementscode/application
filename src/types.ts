@@ -42,12 +42,12 @@ export interface IRequest {
 
   parsedUrl: ParsedUrl;
   url: string;
-  params: {[key: string]: any};
+  params: Map<any, any>;
   query: {[key: string]: any};
   hash: string;
   method: string;
   go(url: string, opts?: any);
-  render<T = any>(importPath: string, attrs?: T);
+  render<T = any>(importPath: string, data?: T);
   status(value?: number): number;
   header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue;
   write(content: any): boolean;

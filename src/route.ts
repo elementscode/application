@@ -1,4 +1,4 @@
-import * as pathToRegexp from 'path-to-regexp';
+import { pathToRegexp, Key } from 'path-to-regexp';
 
 import {
   IRequest,
@@ -8,21 +8,7 @@ import {
 /**
  * The type signature for a route handler callback.
  */
-export type RouteHandler = (this: IRequest, ...args: any[]) => Promise<void>;
-
-/**
- * A copy from path-to-regexp. Objects of this interface describe a url
- * parameter.
- */
-export interface IParamKey {
-  name: string | number;
-  prefix: string;
-  delimiter: string;
-  optional: boolean;
-  repeat: boolean;
-  pattern: string;
-  partial: boolean;
-}
+export type RouteHandler = (req: IRequest) => Promise<void>;
 
 /**
  * A single route in a set of routes in the router.
@@ -34,11 +20,9 @@ export class Route implements IRoute {
 
   protected handler: RouteHandler;
 
-  protected keys: IParamKey[];
+  protected keys: Key[];
 
   protected regex: RegExp;
-
-  protected compiled: any;
 
   /**
    * Constructs a new route.
@@ -53,7 +37,6 @@ export class Route implements IRoute {
     this.handler = handler;
     this.keys = [];
     this.regex = pathToRegexp(this.url, this.keys);
-    this.compiled = pathToRegexp.compile(this.url);
   }
 
   /**
@@ -86,20 +69,11 @@ export class Route implements IRoute {
     // this.keys.
     let paramValues: any[] = match.slice(1);
 
-    req['params'] = {};
+    req['params'] = new Map();
     this.keys.forEach((key, idx) => {
-      req['params'][key.name] = paramValues[idx];
+      req['params'].set(key.name, paramValues[idx]);
     });
-    await this.handler.apply(req);
+    await this.handler(req);
     return true;
-  }
-
-  /**
-   * Given an object of params return a string path for this route.
-   *
-   * @param params - An object of parameter keys and values.
-   */
-  public toUrl(params: any): string {
-    return this.compiled(params);
   }
 }
