@@ -5,6 +5,7 @@ import { Application } from './application';
 import { Browser } from './browser';
 import { Session } from './session';
 import { debug } from './utils';
+import { Logger } from './logger';
 import {
   IHeaderMap,
   HeaderValue,
@@ -18,6 +19,7 @@ export interface IBrowserRequestOpts {
   browser: Browser;
   url: string;
   session: Session;
+  logger: Logger;
 }
 
 export class BrowserRequest implements IRequest {
@@ -25,12 +27,12 @@ export class BrowserRequest implements IRequest {
   public url: string
   public params: Map<any, any>;
   public parsedUrl: ParsedUrl;
-
   private _app: Application;
   private _browser: Browser;
   private _meta: {[index: string]: IMetaTag};
   private _title: string;
   private _description: string;
+  private _logger: Logger;
 
   public get method(): string {
     return 'GET';
@@ -44,18 +46,19 @@ export class BrowserRequest implements IRequest {
     return this.parsedUrl.hash;
   }
 
-  constructor(opts: IBrowserRequestOpts) {
+  public constructor(opts: IBrowserRequestOpts) {
     this.session = opts.session;
     this.url = opts.url;
     this.parsedUrl = ParsedUrl(opts.url, true /* parse query string */);
     this._app = opts.app;
+    this._logger = opts.logger;
     this._browser = opts.browser;
     this._meta = {};
     this._title = '';
     this._description = '';
   }
 
-  title(value?: string): string {
+  public title(value?: string): string {
     if (arguments.length == 1) {
       this._title = value;
     }
@@ -67,7 +70,7 @@ export class BrowserRequest implements IRequest {
     }
   }
 
-  description(value?: string): string {
+  public description(value?: string): string {
     if (arguments.length == 1) {
       this._description = value;
     }
@@ -79,7 +82,7 @@ export class BrowserRequest implements IRequest {
     }
   }
 
-  meta(value: IMetaTag): this {
+  public meta(value: IMetaTag): this {
     if (value.name) {
       this._meta[value.name] = value;
     } else if (value.httpEquiv) {
@@ -91,7 +94,7 @@ export class BrowserRequest implements IRequest {
     return this;
   }
 
-  getMeta(): {[index: string]: IMetaTag} {
+  public getMeta(): {[index: string]: IMetaTag} {
     return Object.assign({}, this._app.getMeta(), this._meta);
   }
 
@@ -106,11 +109,11 @@ export class BrowserRequest implements IRequest {
    * that when the user clicks the back button they won't come back to this url.
    * Most of the time this should be left as false which is the default.
    */
-  go(url: string, options: IGoOpts = {}): void {
+  public go(url: string, options: IGoOpts = {}): void {
     this._browser.go(url, options);
   }
 
-  render<T = any>(vpath: string, attrs: T): this {
+  public render<T = any>(vpath: string, attrs: T): this {
     debug('render %s', vpath);
     this.setTitle();
     this.setMeta();
@@ -139,20 +142,20 @@ export class BrowserRequest implements IRequest {
     return this;
   }
 
-  status(value?: number): number {
+  public status(value?: number): number {
     return 200;
   }
 
-  header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue {
+  public header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue {
     return undefined;
   }
 
-  write(content: string): boolean {
+  public write(content: string): boolean {
     console.log(content);
     return true;
   }
 
-  end(): void {
+  public end(): void {
   }
 
   // change to writeTitle or createTitleElement
@@ -191,5 +194,9 @@ export class BrowserRequest implements IRequest {
     } else {
       document.head.appendChild(fragment);
     }
+  }
+
+  public log(msg: string, ...args: any[]): void {
+    this._logger.log(msg, ...args);
   }
 }

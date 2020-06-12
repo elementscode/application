@@ -15,13 +15,11 @@ export interface IAssetMiddlewareOpts {
 // 6 months asset expiry
 const maxAssetAgeInSeconds = 24 * 60 * 60 * 30 * 6
 
-// pull the target name out of the url path
-const reTargetFromPath = /^targets\/(\w+)/;
-
 export class AssetMiddleware {
   distJson: IDistJson;
-
   assetUrl: string;
+  assetPath: string;
+  reTargetMatcher: RegExp;
 
   constructor(opts: IAssetMiddlewareOpts) {
     this.distJson = opts.distJson;
@@ -31,6 +29,8 @@ export class AssetMiddleware {
     }
 
     this.assetUrl = this.distJson.assetUrl || '/assets';
+    this.assetPath = this.distJson.assetPath || 'assets';
+    this.reTargetMatcher = new RegExp(`^${this.assetUrl}\/(\\w+)`);
   }
 
   async run(req: ServerRequest, next: () => Promise<void>): Promise<void> {
@@ -38,23 +38,23 @@ export class AssetMiddleware {
       return next();
     }
 
-    let filePath = req.url.replace(this.assetUrl + '/', '');
-    let match: any[] = filePath.match(reTargetFromPath);
+    let targetMatch: any[] = req.url.match(this.reTargetMatcher);
+    let filePath = req.url.replace(this.assetUrl, this.assetPath).split(/[?#]/)[0];
     let target: string;
     let distJsonFile: IDistJsonFile;
     let etag: string
 
-    if (!match) {
+    if (!targetMatch) {
       debug('target regex no match');
       req.status(404);
       req.end();
       return
     } else {
-      target = match[1];
+      target = targetMatch[1];
     }
 
     if (!this.distJson.targets[target]) {
-      debug('target %s not in dist.json', target);
+      debug('this.distJson.targets[%j] is undefined', target);
       req.status(404);
       req.end();
       return;
@@ -62,7 +62,7 @@ export class AssetMiddleware {
 
     distJsonFile = this.distJson.targets[target].files[filePath];
     if (!distJsonFile) {
-      debug('dist.json target %s no file %s', target, filePath);
+      debug('this.distJson.targets[%j].files[%j] is undefined', target, filePath);
       req.status(404);
       req.end();
       return;

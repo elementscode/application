@@ -1,12 +1,14 @@
 import { get, set, push } from '@elements/utils';
 
+export type ConfigCallback = (this: Config, config?: Config) => void;
+
 export class Config {
   private _data: any;
 
   public constructor(callback?: any) {
     this._data = {};
     if (typeof callback === 'function') {
-      callback.call(this);
+      callback.call(this, this);
     } else if (callback instanceof Config) {
       this._data = callback._data;
     } else if (typeof callback === 'object') {

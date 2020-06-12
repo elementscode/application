@@ -11,6 +11,7 @@ import { BrowserRequest } from './browser-request';
 import { Deferred } from './deferred';
 import { Session } from './session';
 import { LinearBackoff } from './linear-backoff';
+import { Logger } from './logger';
 import {
   StandardError
 } from './errors';
@@ -137,11 +138,17 @@ export class Browser {
   protected sessionWillExpireEventTimer?: NodeJS.Timer;
 
   /**
+   * An app logger.
+   */
+  protected logger: Logger;
+
+  /**
    * Creates a new Browser instance.
    */
   public constructor(opts: IBrowserOpts) {
     this.opts = withDefaultValues(opts || {}, {});
     this.app = this.opts.app;
+    this.logger = new Logger();
     this.events = [];
     this.sendQueue = [];
     this.nextMessageId = 0;
@@ -359,6 +366,7 @@ export class Browser {
       browser: this,
       url: url,
       session: this.getSessionFromCookie(this.getCookie()) || new Session(),
+      logger: this.logger,
     });
 
     try {

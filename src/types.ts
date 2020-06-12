@@ -33,13 +33,10 @@ export type ErrorCallback = (req: IRequest, err: Error) => any;
 export interface IRequest {
   req?: http.IncomingMessage;
   res?: http.ServerResponse;
-
   session: Session;
-
   title(value?: string): string;
   description(value?: string): string;
   meta(value?: IMetaTag);
-
   parsedUrl: ParsedUrl;
   url: string;
   params: Map<any, any>;
@@ -52,6 +49,7 @@ export interface IRequest {
   header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue;
   write(content: any): boolean;
   end(): void;
+  log(msg: string, ...args: any[]): void;
 }
 
 export interface ISessionOptions {

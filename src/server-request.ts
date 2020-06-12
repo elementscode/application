@@ -91,7 +91,7 @@ export class ServerRequest implements IRequest {
     this._description = '';
   }
 
-  async call<T = any>(method: string, ...args: any[]): Promise<T> {
+  public async call<T = any>(method: string, ...args: any[]): Promise<T> {
     return call({
       session: this.session,
       logger: this.logger,
@@ -100,7 +100,7 @@ export class ServerRequest implements IRequest {
     });
   }
 
-  title(value?: string): string {
+  public title(value?: string): string {
     if (arguments.length == 1) {
       this._title = value;
     }
@@ -112,7 +112,7 @@ export class ServerRequest implements IRequest {
     }
   }
 
-  description(value?: string): string {
+  public description(value?: string): string {
     if (arguments.length == 1) {
       this._description = value;
     }
@@ -124,7 +124,7 @@ export class ServerRequest implements IRequest {
     }
   }
 
-  meta(value: IMetaTag): this {
+  public meta(value: IMetaTag): this {
     if (value.name) {
       this._meta[value.name] = value;
     } else if (value.httpEquiv) {
@@ -136,17 +136,17 @@ export class ServerRequest implements IRequest {
     return this;
   }
 
-  getMeta(): {[index: string]: IMetaTag} {
+  public getMeta(): {[index: string]: IMetaTag} {
     return Object.assign({}, this._app.getMeta(), this._meta);
   }
 
-  go(url: string, opts?: any) {
+  public go(url: string, opts?: any) {
     this.status(302);
     this.header('Location', url);
     this.end();
   }
 
-  render<T = any>(importPath: string, data: T = {} as any) {
+  public render<T = any>(importPath: string, data: T = {} as any) {
     debug('render %s', importPath);
 
     // etag caching
@@ -233,7 +233,7 @@ export class ServerRequest implements IRequest {
     return html;
   }
 
-  status(value?: number): number {
+  public status(value?: number): number {
     if (typeof value !== 'undefined') {
       this.res.statusCode = value;
     }
@@ -241,7 +241,7 @@ export class ServerRequest implements IRequest {
     return this.res.statusCode;
   }
 
-  header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue {
+  public header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue {
     if (typeof key === 'string') {
       if (arguments.length == 2) {
         this.res.setHeader(capitalizeHeaderName(key), value);
@@ -258,12 +258,16 @@ export class ServerRequest implements IRequest {
     return '';
   }
 
-  write(content: string | Buffer): boolean {
+  public write(content: string | Buffer): boolean {
     return this.res.write(content);
   }
 
-  end() {
+  public end() {
     this.res.end();
+  }
+
+  public log(msg: string, ...args: any[]): void {
+    this.logger.log(msg, ...args);
   }
 }
 
