@@ -1,7 +1,7 @@
 {
   "name": "@elements/application",
   "description": "The elements web framework.",
-  "version": "1.0.0-alpha1",
+  "version": "1.0.0-alpha9",
   "license": "SEE LICENSE IN LICENSE",
   "browser": {
     "./asset_middleware": false,
@@ -12,8 +12,9 @@
     "./types": false
   },
   "dependencies": {
-    "@elements/runtime": "1.0.0-alpha6",
-    "@elements/utils": "1.0.0",
+    "@elements/json": "1.0.0-alpha9",
+    "@elements/runtime": "1.0.0-alpha9",
+    "@elements/utils": "1.0.0-alpha9",
     "base64-url": "2.3.3",
     "debug": "4.1.1",
     "mime": "2.4.6",
@@ -33,9 +34,5 @@
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },
-  "scripts": {
-    "install-all": "npm i && npm run link-deps",
-    "link": "(cd .elements/dist && ln -s ../../node_modules && sudo npm link && sudo chown -R $(whoami):staff .)",
-    "link-deps": "npm link @elements/runtime npm && npm link @elements/utils&& npm link @elements/json"
-  }
+  "scripts": {}
 }

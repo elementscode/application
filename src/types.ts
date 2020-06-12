@@ -107,3 +107,15 @@ export interface ILoader {
 export interface ISessionHost {
   session: Session;
 }
+
+export interface IHttpListenOptions {
+  port?: number;
+  host?: string;
+  backlog?: number;
+  path?: string;
+  exclusive?: boolean;
+  readableAll?: boolean;
+  writableAll?: boolean;
+  ipv6Only?: boolean;
+}
+

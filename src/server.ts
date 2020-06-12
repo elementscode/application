@@ -24,6 +24,7 @@ import { Session } from './session';
 import { success } from './ansi';
 import { onBeforeSendHeaders } from './headers';
 import { call } from './call';
+import { Config } from './config';
 import {
   StandardError,
   UnhandledError,
@@ -39,9 +40,12 @@ import {
   ICallMessage,
   IReturnMessage,
   ISessionHost,
+  ISessionOptions,
+  IHttpListenOptions,
 } from './types';
 import {
   debug,
+  getProjectConfig,
 } from './utils';
 
 const HEARTBEAT_INTERVAL = 60000; // 60 seconds
@@ -57,7 +61,6 @@ const wsColor = 68;
 export class IServerOptions {
   env: string;
   app: Application;
-  port?: number;
 }
 
 export class Server {
@@ -68,12 +71,12 @@ export class Server {
   private logger: Logger;
   private middleware: MiddlewareStack;
   private opts: IServerOptions;
+  private config: Config;
   private wsServer: WebSocket.Server;
 
   public constructor(opts: IServerOptions) {
     this.opts = withDefaultValues(opts || {}, {
       env: 'dev',
-      port: 3000
     });
 
     this.logger = new Logger();
@@ -97,12 +100,25 @@ export class Server {
     return server;
   }
 
+  protected getHttpListenOpts(): IHttpListenOptions {
+    return {
+      port: this.config.get<number>('http.port', 3000),
+    };
+  }
+
+  protected getSessionOpts(): ISessionOptions {
+    return {
+      key: this.config.get<string>('session.key', 'elements_session'),
+      password: this.config.get<string>('session.password', 'p@ssw0rd!'),
+      loggedInExpires: this.config.get<number|undefined>('session.loggedInExpires', undefined),
+      loggedOutExpires: this.config.get<number|undefined>('session.loggedOutExpires', undefined),
+    };
+  }
+
   public async start(callback?: () => void): Promise<void> {
     debug('start');
 
-    // XXX can we pass http options directly from config here? and then use a
-    // default value?
-    this.httpServer.listen(this.opts.port, () => {
+    this.httpServer.listen(this.getHttpListenOpts(), () => {
       let msg = `elements is listening at ${this.url()}.`;
       this.logger.success(msg);
     });
@@ -123,6 +139,7 @@ export class Server {
 
   protected load(app: Application) {
     debug('load');
+    this.config = getProjectConfig();
     this.app = app;
     this.readDistJson();
     this.loadMiddleware();
@@ -210,11 +227,12 @@ export class Server {
     let proto = 'http://';
     let host = this.opts.env === 'dev' ? 'localhost' : addr.address;
 
-    let port;
-    if (this.opts.port == 80 || this.opts.port == 443) {
-      port = '';
+    let port: number = this.getHttpListenOpts().port;
+    let portLabel: string;
+    if (port == 80 || port == 443) {
+      portLabel = '';
     } else {
-      port = ':' + this.opts.port;
+      portLabel = ':' + port;
     }
 
     return proto + host + port;
@@ -231,7 +249,8 @@ export class Server {
    */
   onHttpError(error: Error): void {
     if (error['code'] === 'EADDRINUSE') {
-      this.logger.error(`It looks like another program is already using port ${this.opts.port}. Try looking at your processes with the "ps" command.\nKill all node processes with "> sudo killall node".`);
+      let port: number = this.getHttpListenOpts().port;
+      this.logger.error(`It looks like another program is already using port ${port}. Try looking at your processes with the "ps" command.\nKill all node processes with "> sudo killall node".`);
       process.exit(1);
     }
 
@@ -267,10 +286,7 @@ export class Server {
     let timer = new Timer();
     timer.start();
 
-    let session = Session.createFromHttp(req, res, {
-      // FIXME get from config with default value.
-      password: 'p@ssw0rd!',
-    });
+    let session = Session.createFromHttp(req, res, this.getSessionOpts());
 
     let logger = this.createLoggerForSession(session);
     logger.tag('http', httpColor);
@@ -356,9 +372,7 @@ export class Server {
   onWsMessage(socket: WebSocket, data: WebSocket.Data): void {
     try {
       let message = parse(data as string) as IMessage;
-      let session = Session.createFromCookie(message.cookie, {
-        // TODO get session options from config.
-      });
+      let session = Session.createFromCookie(message.cookie, this.getSessionOpts());
 
       switch (message.type) {
         case 'call':
