@@ -2,7 +2,7 @@ import * as path from 'path';
 import { Logger } from './logger';
 import { NotAcceptableError, NotFoundError } from './errors';
 import { Session } from './session';
-import { debug } from './utils';
+import { debug } from './debug';
 import { Service } from './service';
 
 export interface ICallOptions {

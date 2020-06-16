@@ -1,6 +1,6 @@
 import { ServerRequest } from './server-request';
 import { Application } from './application';
-import { debug } from './utils';
+import { debug } from './debug';
 import {
   NotAuthorizedError,
   NotFoundError,

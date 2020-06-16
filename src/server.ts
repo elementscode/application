@@ -21,9 +21,14 @@ import { AssetMiddleware } from './asset-middleware';
 import { AppMiddleware } from './app-middleware';
 import { MiddlewareStack } from './middleware-stack';
 import { Session } from './session';
+import {
+  createSessionFromHttp,
+  createSessionFromCookie,
+  createCookieFromSession,
+} from './session-server';
 import { success } from './ansi';
 import { onBeforeSendHeaders } from './headers';
-import { call } from './call';
+import { call } from './call-server';
 import { Config } from './config';
 import {
   StandardError,
@@ -43,10 +48,7 @@ import {
   ISessionOptions,
   IHttpListenOptions,
 } from './types';
-import {
-  debug,
-  getProjectConfig,
-} from './utils';
+import { debug } from './debug';
 
 const HEARTBEAT_INTERVAL = 60000; // 60 seconds
 const methodColor = 165;
@@ -139,7 +141,7 @@ export class Server {
 
   protected load(app: Application) {
     debug('load');
-    this.config = getProjectConfig();
+    this.config = this.getProjectConfig();
     this.app = app;
     this.readDistJson();
     this.loadMiddleware();
@@ -286,7 +288,8 @@ export class Server {
     let timer = new Timer();
     timer.start();
 
-    let session = Session.createFromHttp(req, res, this.getSessionOpts());
+    // XXX can we set the id here?
+    let session = createSessionFromHttp(req, res, this.getSessionOpts());
 
     let logger = this.createLoggerForSession(session);
     logger.tag('http', httpColor);
@@ -372,7 +375,7 @@ export class Server {
   onWsMessage(socket: WebSocket, data: WebSocket.Data): void {
     try {
       let message = parse(data as string) as IMessage;
-      let session = Session.createFromCookie(message.cookie, this.getSessionOpts());
+      let session = createSessionFromCookie(message.cookie, this.getSessionOpts());
 
       switch (message.type) {
         case 'call':
@@ -500,7 +503,7 @@ export class Server {
 
   createMessage<T extends IMessage>(session: Session | undefined, props: any): T {
     let message: T = {
-      cookie: typeof session === 'undefined' ? '' : session.toCookie(),
+      cookie: typeof session === 'undefined' ? '' : createCookieFromSession(session),
       csrf: '',
       ...props
     }
@@ -510,5 +513,20 @@ export class Server {
 
   sendMessage(socket: WebSocket, message: IMessage): void {
     socket.send(stringify(message));
+  }
+
+  getProjectConfig(): Config {
+    try {
+      let exports = require(path.join(process.cwd(), 'config'));
+      if (exports instanceof Config) {
+        return exports;
+      } else if (exports.default instanceof Config) {
+        return exports.default;
+      } else {
+        return new Config();
+      }
+    } catch(err) {
+      return new Config();
+    }
   }
 }

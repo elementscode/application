@@ -1,5 +1,5 @@
 import { ServerRequest } from './server-request';
-import { debug } from './utils';
+import { debug } from './debug';
 import {
   IMiddleware,
 } from './types';

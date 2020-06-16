@@ -6,7 +6,6 @@ export * from './application';
 export * from './asset-middleware';
 export * from './browser-request';
 export * from './browser';
-export * from './call';
 export * from './config';
 export * from './errors';
 export * from './logger';

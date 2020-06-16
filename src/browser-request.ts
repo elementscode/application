@@ -4,7 +4,7 @@ import * as ParsedUrl from 'url-parse';
 import { Application } from './application';
 import { Browser } from './browser';
 import { Session } from './session';
-import { debug } from './utils';
+import { debug } from './debug';
 import { Logger } from './logger';
 import {
   IHeaderMap,
@@ -138,7 +138,7 @@ export class BrowserRequest implements IRequest {
       this._browser.renderUnhandledErrorPage(err);
     }
 
-    window['Loader'].load(vpath, onLoaded, onError);
+    window['loader'].load(vpath, onLoaded, onError);
     return this;
   }
 

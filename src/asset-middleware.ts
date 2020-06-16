@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as mime from 'mime';
 import { IDistJson, IDistJsonFile, IDistJsonTarget } from '@elements/runtime';
 import { ServerRequest } from './server-request';
-import { debug } from './utils';
+import { debug } from './debug';
 import {
   IRequest,
 } from './types';

@@ -1,7 +1,8 @@
 import { ServerRequest } from './server-request';
 import { ISessionOptions, IMiddleware } from './types';
 import { Session } from './session';
-import { debug } from './utils';
+import { createSessionFromHttp } from './session-server';
+import { debug } from './debug';
 
 declare module 'http' {
   export interface IncomingMessage {
@@ -17,7 +18,7 @@ export class SessionMiddleware implements IMiddleware {
   }
 
   public async run(req: ServerRequest, next: () => Promise<void>): Promise<void> {
-    req.session = Session.createFromHttp(req.req, req.res, this.opts);
+    req.session = createSessionFromHttp(req.req, req.res, this.opts);
     debug('create session %s', req.session.id);
     return next();
   }

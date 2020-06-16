@@ -6,7 +6,7 @@ import {
   getUtcTimeNow,
 } from '@elements/utils';
 import { Application } from './application';
-import { debug } from './utils';
+import { debug } from './debug';
 import { BrowserRequest } from './browser-request';
 import { Deferred } from './deferred';
 import { Session } from './session';
@@ -365,7 +365,7 @@ export class Browser {
       app: this.app,
       browser: this,
       url: url,
-      session: this.getSessionFromCookie(this.getCookie()) || new Session(),
+      session: this.getSessionFromCookie(this.getCookie()) || this.createEmptySession(),
       logger: this.logger,
     });
 
@@ -378,6 +378,12 @@ export class Browser {
     } catch(err) {
       this.renderUnhandledErrorPage(err);
     }
+  }
+
+  protected createEmptySession(): Session {
+    let session = new Session();
+    session.id = '0';
+    return session;
   }
 
   public getSessionFromCookie(cookie: string): Session | undefined {
@@ -785,10 +791,8 @@ export class Browser {
 
   protected onRestartMessage(message: IRestartMessage): void {
     debug('restart');
-    window['Bundles'] = message.bundles;
-    window['Loader'].load(this.getCurrentVPath(), () => {
-      this.run(location.pathname + location.search + location.hash);
-    });
+    window['bundles'] = message.bundles;
+    this.run(location.pathname + location.search + location.hash);
   }
 
   /**

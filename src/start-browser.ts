@@ -32,13 +32,13 @@ export function start(load: () => Application | { default: Application }) {
 }
 
 function getAppFromCallback(callback: () => Application | { default: Application }): Application {
-  let exports = callback();
+  let cbExports = callback();
   let app: Application;
 
-  if (exports instanceof Application) {
-    app = exports;
+  if (cbExports instanceof Application) {
+    app = cbExports;
   } else {
-    app = exports.default;
+    app = cbExports.default;
   }
 
   if (typeof app === 'undefined') {

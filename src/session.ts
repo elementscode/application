@@ -1,17 +1,11 @@
-import * as http from 'http';
-import * as uuid from 'uuid';
+import { ISessionOptions } from './types';
+import { debug } from './debug';
+import { createSessionId } from './session-server';
 import { 
   withDefaultValue,
   getUtcTimeNow,
   getUtcDate,
 } from '@elements/utils';
-import { sign, verify } from './crypto';
-import * as base64Url from 'base64-url';
-import { ISessionOptions } from './types';
-import {
-  debug,
-} from './utils';
-import { onBeforeSendHeaders } from './headers';
 
 const SESSION_FORMAT_VERSION = 1;
 
@@ -238,137 +232,7 @@ export class Session {
    * Creates a new session id.
    */
   protected createId(): string {
-    try {
-      return uuid.v4();
-    } catch(err) {
-      return '';
-    }
-  }
-
-  public toCookie(): string {
-    let header = {
-      v: SESSION_FORMAT_VERSION,
-      alg: 'HS256',
-    };
-
-    let payload: any = {
-      id: this.id,
-      userId: this.userId,
-      csrf: this.csrf,
-      expires: this.expires,
-      timestamp: this.timestamp,
-    };
-
-    let parts = [
-      base64Url.encode(JSON.stringify(header)),
-      base64Url.encode(JSON.stringify(payload))
-    ];
-
-    let signature = sign(parts.join('.'), this.password);
-    let cookie = parts.concat([signature]).join('.');
-    let trailers: string[] = [];
-
-    // the cookie is for the root path
-    trailers.push(`Path=/`);
-
-    // don't send the cookie when another origin creates a request.
-    trailers.push(`SameSite=Strict`);
-
-    // set the expiry
-    if (typeof this.expires !== 'undefined') {
-      let date = getUtcDate(this.expires);
-      trailers.push(`Expires=${date}`);
-    }
-
-    return this.key + '=' + cookie + '; ' + trailers.join('; ');
-  }
-
-  /**
-   * Sets the session cookie on the response object and returns the response.
-   *
-   * @param res The response object.
-   * @param session The session object.
-   * @param key The cookie name (e.g. 'session').
-   */
-  public setCookieOnHttpResponse(res: http.ServerResponse): this {
-    // then set the cookie header in the response.
-    let cookies = <string[] | string | undefined>res.getHeader('Set-Cookie');
-
-    if (typeof cookies === 'string') {
-      cookies = [cookies];
-    }
-
-    else if (typeof cookies === 'undefined') {
-      cookies = [];
-    }
-
-    let cookie = this.toCookie();
-    cookies.push(cookie);
-    res.setHeader('Set-Cookie', cookies);
-    return this;
-  }
-
-  public static createFromCookie(cookie: string, opts: ISessionOptions): Session {
-    if (typeof cookie === 'undefined') {
-      return new Session(opts);
-    }
-
-    // just get the first part of the cookie without the options if there are
-    // any
-    cookie = cookie.split(';')[0];
-
-    let parts = cookie.split('.');
-
-    // pop the signature off the end
-    let signature = <string>parts.pop();
-
-    // and see if we compute the same signature for the rest (i.e. 'verify' the
-    // cookie)
-    let signatureVerified = verify(parts.join('.'), signature, opts.password);
-
-    // get the payload
-    let payload = <string>parts.pop();
-
-    // and the header
-    let header = <string>parts.pop();
-
-    // to store the deserialized cookie payload
-    let deserialized;
-
-    try {
-      // decrypt, base 64 decode and json parse the payload into an object
-      deserialized = JSON.parse(base64Url.decode(payload));
-    } catch (err) {
-      debug(`Error parsing cookie into a Session instance. ${err.message}`);
-      return new Session(opts);
-    }
-
-    let session = new Session(opts);
-    session['id'] = deserialized['id'];
-    session['userId'] = deserialized['userId'];
-    session['userHandle'] = deserialized['userHandle'];
-    session['csrf'] = deserialized['csrf'];
-    session['expires'] = deserialized['expires'];
-    session['timestamp'] = deserialized['timestamp'];
-
-    if (typeof session.id === 'undefined' || session.isExpired()) {
-      return new Session(opts);
-    } else if (!signatureVerified) {
-      return new Session(opts);
-    } else {
-      return session;
-    }
-  }
-
-  /**
-   * Creates a session from an http request and ensures the session is set on
-   * the http response.
-   */
-  public static createFromHttp(req: http.IncomingMessage, res: http.ServerResponse, opts: ISessionOptions): Session {
-    let cookie = extractCookie(<string | string[] | undefined>req.headers['cookie']);
-    let session = Session.createFromCookie(cookie, opts);
-    onBeforeSendHeaders(res, () => session.setCookieOnHttpResponse(res));
-    return session;
+    return createSessionId();
   }
 }
 

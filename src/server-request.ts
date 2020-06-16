@@ -11,10 +11,10 @@ import {
   diskPath,
 } from '@elements/utils';
 import { Logger } from './logger';
-import { debug } from './utils';
+import { debug } from './debug';
 import { Application } from './application';
 import { Session } from './session';
-import { call } from './call';
+import { call } from './call-server';
 import {
   IHeaderMap,
   HeaderValue,
@@ -186,12 +186,24 @@ export class ServerRequest implements IRequest {
     let bootBundle = this._distJson.targets['browser'].bundles['boot'];
 
     let cssTags: string[];
-    cssTags = bootBundle.style.map(file => `<link rel="stylesheet" href="${file.url}">`);
-    cssTags = cssTags.concat(pageBundle.style.map(file => `<link rel="stylesheet" href="${file.url}">`));
+    cssTags = bootBundle.style.map(file => {
+      let dataSource = file.source ? ` data-source="${file.source}"` : '';
+      return `<link rel="stylesheet" href="${file.url}"${dataSource}>`
+    });
+    cssTags = cssTags.concat(pageBundle.style.map(file => {
+      let dataSource = file.source ? ` data-source="${file.source}"` : '';
+      return `<link rel="stylesheet" href="${file.url}"${dataSource}>`
+    }));
 
     let scriptTags: string[];
-    scriptTags = bootBundle.code.map(file => `<script type="text/javascript" src="${file.url}"></script>`)
-    scriptTags = scriptTags.concat(pageBundle.code.map(file => `<script type="text/javascript" src="${file.url}"></script>`));
+    scriptTags = bootBundle.code.map(file => {
+      let dataSource = file.source ? ` data-source="${file.source}"` : '';
+      return `<script type="text/javascript" src="${file.url}"${dataSource}></script>`
+    })
+    scriptTags = scriptTags.concat(pageBundle.code.map(file => {
+      let dataSource = file.source ? ` data-source="${file.source}"` : '';
+      return `<script type="text/javascript" src="${file.url}"${dataSource}></script>`
+    }));
 
     let defaultMetaTags: IMetaTag[] = [
       { name: 'description', content: this.description() },

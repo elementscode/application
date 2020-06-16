@@ -1,20 +1,24 @@
 {
   "name": "@elements/application",
   "description": "The elements web framework.",
-  "version": "1.0.0-alpha9",
+  "version": "1.0.0-alpha10",
   "license": "SEE LICENSE IN LICENSE",
   "browser": {
-    "./asset_middleware": false,
-    "./crypto": false,
-    "./headers": false,
+    "./app-middleware": false,
+    "./asset-middleware": false,
+    "./middleware-stack": false,
+    "./server-request": false,
     "./server": false,
+    "./session-middleware": false,
+    "./types": false,
     "./start": "./start-browser",
-    "./types": false
+    "./session-server": "./session-browser",
+    "./call-server": false
   },
   "dependencies": {
-    "@elements/json": "1.0.0-alpha9",
-    "@elements/runtime": "1.0.0-alpha9",
-    "@elements/utils": "1.0.0-alpha9",
+    "@elements/json": "1.0.0-alpha10",
+    "@elements/runtime": "1.0.0-alpha10",
+    "@elements/utils": "1.0.0-alpha10",
     "base64-url": "2.3.3",
     "debug": "4.1.1",
     "mime": "2.4.6",
