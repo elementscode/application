@@ -38,20 +38,10 @@ export class AssetMiddleware {
       return next();
     }
 
-    let targetMatch: any[] = req.url.match(this.reTargetMatcher);
     let filePath = req.url.replace(this.assetUrl, this.assetPath).split(/[?#]/)[0];
-    let target: string;
+    let target: string = 'browser';
     let distJsonFile: IDistJsonFile;
     let etag: string
-
-    if (!targetMatch) {
-      debug('target regex no match');
-      req.status(404);
-      req.end();
-      return
-    } else {
-      target = targetMatch[1];
-    }
 
     if (!this.distJson.targets[target]) {
       debug('this.distJson.targets[%j] is undefined', target);
