@@ -83,11 +83,8 @@ export class Application implements IRoute {
    * Import another router, optionally at a prefix url.
    *
    */
-  public routes(router: IRoute, prefix?: string): this {
-    if (typeof router === 'undefined') {
-      throw new Error('app.routes(router, prefix) received an undefined router. Is the router or app exported from the imported file?');
-    }
-    this._router.routes(router, prefix);
+  public routes(prefix: string, router?: IRoute|{default: IRoute}): this {
+    this._router.routes(prefix, router);
     return this;
   }
 

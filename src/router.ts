@@ -62,13 +62,20 @@ export class Router implements IRoute {
    * Import another router, optionally at a prefix url.
    *
    */
-  public routes(router: IRoute, prefix?: string): this {
+  public routes(prefix: string, router?: IRoute|{default: IRoute}): this {
     if (typeof router === 'undefined') {
-      throw new Error('router.routes(router, prefix) received an undefined router. Is the router or app exported from the imported file?');
+      // it might be undefined because it's a server only route.
+      return this;
     }
 
-    router.prefix = prefix || '';
-    this._routes.push(router);
+    if (typeof (<{default: IRoute}>router).default !== 'undefined') {
+      // automatically assign the default export if there is one.
+      router = (<{default: IRoute}>router).default;
+    }
+
+    let iroute = router as IRoute;
+    iroute.prefix = prefix || '';
+    this._routes.push(iroute);
     return this;
   }
 
