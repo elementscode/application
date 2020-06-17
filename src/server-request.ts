@@ -188,22 +188,22 @@ export class ServerRequest implements IRequest {
 
     let cssTags: string[];
     cssTags = bootBundle.style.map(file => {
-      let dataSource = file.source ? ` data-source="${file.source}"` : '';
-      return `<link rel="stylesheet" href="${file.url}"${dataSource}>`
+      let dataSourceOrIgnore = file.source ? `data-source="${file.source}"` : 'data-loader="ignore"';
+      return `<link rel="stylesheet" href="${file.url}" ${dataSourceOrIgnore}>`
     });
     cssTags = cssTags.concat(pageBundle.style.map(file => {
-      let dataSource = file.source ? ` data-source="${file.source}"` : '';
-      return `<link rel="stylesheet" href="${file.url}"${dataSource}>`
+      let dataSourceOrIgnore = file.source ? `data-source="${file.source}"` : 'data-loader="ignore"';
+      return `<link rel="stylesheet" href="${file.url}" ${dataSourceOrIgnore}>`
     }));
 
     let scriptTags: string[];
     scriptTags = bootBundle.code.map(file => {
-      let dataSource = file.source ? ` data-source="${file.source}"` : '';
-      return `<script type="text/javascript" src="${file.url}"${dataSource}></script>`
+      let dataSourceOrIgnore = file.source ? `data-source="${file.source}"` : 'data-loader="ignore"';
+      return `<script type="text/javascript" src="${file.url}" ${dataSourceOrIgnore}></script>`
     })
     scriptTags = scriptTags.concat(pageBundle.code.map(file => {
-      let dataSource = file.source ? ` data-source="${file.source}"` : '';
-      return `<script type="text/javascript" src="${file.url}"${dataSource}></script>`
+      let dataSourceOrIgnore = file.source ? `data-source="${file.source}"` : 'data-loader="ignore"';
+      return `<script type="text/javascript" src="${file.url}" ${dataSourceOrIgnore}></script>`
     }));
 
     let defaultMetaTags: IMetaTag[] = [
