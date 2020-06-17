@@ -83,8 +83,8 @@ export class Application implements IRoute {
    * Import another router, optionally at a prefix url.
    *
    */
-  public routes(prefix: string, router?: IRoute|{default: IRoute}): this {
-    this._router.routes(prefix, router);
+  public routes(prefix: string, routeExports?: {default: Router}): this {
+    this._router.routes(prefix, routeExports);
     return this;
   }
 

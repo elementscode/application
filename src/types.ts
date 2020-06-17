@@ -48,6 +48,7 @@ export interface IRequest {
   status(value?: number): number;
   header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue;
   write(content: any): boolean;
+  json(value: any): boolean;
   end(): void;
   log(msg: string, ...args: any[]): void;
 }

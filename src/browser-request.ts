@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as ParsedUrl from 'url-parse';
+import { stringify } from '@elements/json';
 import { Application } from './application';
 import { Browser } from './browser';
 import { Session } from './session';
@@ -152,6 +153,11 @@ export class BrowserRequest implements IRequest {
 
   public write(content: string): boolean {
     console.log(content);
+    return true;
+  }
+
+  public json(value: any): boolean {
+    console.log(stringify(value));
     return true;
   }
 

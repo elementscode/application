@@ -5,6 +5,7 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import * as ParsedUrl from 'url-parse';
 import { IDistJson, IDistJsonBundle } from '@elements/runtime';
+import { stringify } from '@elements/json';
 import {
   indent,
   capitalize,
@@ -272,6 +273,11 @@ export class ServerRequest implements IRequest {
 
   public write(content: string | Buffer): boolean {
     return this.res.write(content);
+  }
+
+  public json(value: any): boolean {
+    this.header('content-type', 'application/json');
+    return this.res.write(stringify(value) + '\n');
   }
 
   public end() {
