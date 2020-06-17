@@ -114,33 +114,30 @@ export class BrowserRequest implements IRequest {
     this._browser.go(url, options);
   }
 
-  public render<T = any>(vpath: string, attrs: T): this {
+  public async render<T = any>(vpath: string, attrs: T): Promise<void> {
     debug('render %s', vpath);
-    this.setTitle();
-    this.setMeta();
 
-    let onLoaded = () => {
-      let prevVPath = this._browser.getCurrentVPath();
-      this._browser.setCurrentVPath(vpath);
+    try {
+      await window['loader'].load(vpath, async (): Promise<void> => {
+        this.setTitle();
+        this.setMeta();
+        let prevVPath = this._browser.getCurrentVPath();
+        this._browser.setCurrentVPath(vpath);
 
-      let view = require(vpath).default;
-      if (!view) {
-        throw new Error(`Unable to render view because a default view class was not exported from the file ${vpath}.`);
-      }
+        let view = require(vpath).default;
+        if (!view) {
+          throw new Error(`Unable to render view because a default view class was not exported from the file ${vpath}.`);
+        }
 
-      if (vpath != prevVPath) {
-        ReactDOM.unmountComponentAtNode(document.body.children[0]);
-      }
-      let el = React.createElement(view, attrs);
-      ReactDOM.render(el, document.body.children[0]);
-    };
-
-    let onError = (err: Error) => {
+        if (vpath != prevVPath) {
+          ReactDOM.unmountComponentAtNode(document.body.children[0]);
+        }
+        let el = React.createElement(view, attrs);
+        ReactDOM.render(el, document.body.children[0]);
+      });
+    } catch (err) {
       this._browser.renderUnhandledErrorPage(err);
     }
-
-    window['loader'].load(vpath, onLoaded, onError);
-    return this;
   }
 
   public status(value?: number): number {

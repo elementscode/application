@@ -44,7 +44,7 @@ export interface IRequest {
   hash: string;
   method: string;
   go(url: string, opts?: any);
-  render<T = any>(importPath: string, data?: T);
+  render<T = any>(importPath: string, data?: T): Promise<void>;
   status(value?: number): number;
   header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue;
   write(content: any): boolean;

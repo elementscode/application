@@ -147,7 +147,7 @@ export class ServerRequest implements IRequest {
     this.end();
   }
 
-  public render<T = any>(importPath: string, data: T = {} as any) {
+  public async render<T = any>(importPath: string, data: T = {} as any): Promise<void> {
     debug('render %s', importPath);
 
     // etag caching
