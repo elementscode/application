@@ -127,6 +127,7 @@ export class Server {
 
     this.heartBeatIntervalId = this.startHeartBeat();
     process.on('uncaughtException', (err) => this.onUncaughtError(err));
+    this.opts.app.fire('start');
   }
 
   protected getHttpServerOpts(): http.ServerOptions {
@@ -134,9 +135,11 @@ export class Server {
   }
 
   public restart(app: Application, changed: IDistJsonFileChangeSets) {
-    this.logger.info("hot reboot");
+    debug('reload');
+    this.logger.info("hot reload");
     this.load(app);
     this.sendRestartMessage();
+    app.fire('reload');
   }
 
   protected load(app: Application) {
@@ -330,14 +333,24 @@ export class Server {
       logger.log('%s %s', req.url, color('(' + err.constructor.name + ' ' + timer.toString() + ')', errColor));
 
       if (err instanceof NotAuthorizedError) {
-        request.status(401);
-        if (this.app['_onNotAuthorizedErrorCb']) {
-          this.app['_onNotAuthorizedErrorCb'].call(request, err);
+        try {
+          request.status(401);
+          this.app.fire('notAuthorized', request, err);
+        } catch (err) {
+          // a runtime error happened in the event handler so we need to handle that
+          // here as a fallback.
+          request.status(500);
+          logger.log('%s', indent(err.stack, 2));
         }
       } else {
-        request.status(500);
-        if (this.app['_onUnhandledErrorCb']) {
-          this.app['_onUnhandledErrorCb'].call(req, err);
+        try {
+          request.status(500);
+          this.app.fire('unhandledError', request, err);
+        } catch (err) {
+          // a runtime error happened in the event handler so we need to handle that
+          // here as a fallback.
+          request.status(500);
+          logger.log('%s', indent(err.stack, 2));
         }
       }
     } finally {

@@ -170,6 +170,7 @@ export class Browser {
     this.setSessionTimers();
     this.connect();
     this.started = true;
+    this.app.fire('start');
     return this;
   }
 
@@ -373,10 +374,15 @@ export class Browser {
       let found = await this.app.run(req.parsedUrl.pathname, req);
 
       if (!found) {
-        this.renderNotFoundPage(url);
+        this.app.fire('notFoundError', req);
       }
     } catch(err) {
-      this.renderUnhandledErrorPage(err);
+      try {
+        this.app.fire('unhandledError', req, err);
+      } catch(err2) {
+        console.error(`app.on('unhandledError', ...) threw an error itself. The original error is below. The unhandledError runtime error is: ${err2}`);
+        console.error(err);
+      }
     }
   }
 
@@ -790,9 +796,10 @@ export class Browser {
   }
 
   protected onRestartMessage(message: IRestartMessage): void {
-    debug('restart');
+    debug('reload');
     window['bundles'] = message.bundles;
     this.run(location.pathname + location.search + location.hash);
+    this.app.fire('reload');
   }
 
   /**

@@ -1,5 +1,6 @@
 import { RouteHandler } from './route';
 import { Router } from './router';
+import { EventHandler } from './events';
 import {
   IRequest,
   IRoute,
@@ -12,9 +13,7 @@ export class Application implements IRoute {
   private _description: string;
   private _meta: {[index: string]: IMetaTag};
   private _router: Router;
-  private _onUnhandledErrorCb: ErrorCallback;
-  private _onNotFoundErrorCb: ErrorCallback;
-  private _onNotAuthorizedErrorCb: ErrorCallback;
+  private _events: EventHandler;
   public prefix?: string;
 
   public constructor() {
@@ -22,6 +21,7 @@ export class Application implements IRoute {
     this._meta = {};
     this._title = '';
     this._description = '';
+    this._events = new EventHandler(this);
   }
 
   public title(value?: string): string {
@@ -92,27 +92,22 @@ export class Application implements IRoute {
   }
 
   /**
-   * The provided callback will be called for unhandled errors.
+   * Listen to an event.
+   * @param event - The name of the event to listen to (e.g. 'start').
+   * @param callback - The function to call when the event is fired.
    */
-  public onUnhandledError(callback: ErrorCallback): this {
-    this._onUnhandledErrorCb = callback;
+  public on(event: string, callback: (...args: any[]) => any): this {
+    this._events.on(event, callback);
     return this;
   }
 
   /**
-   * The provided callback will be called when a route is not found for a
-   * request.
+   * Fire an event with the given args.
+   * @param event - The name of the event to fire.
+   * @param args - The arguments to pass to the event handlers.
    */
-  public onNotFoundError(callback: ErrorCallback): this {
-    this._onNotFoundErrorCb = callback;
-    return this;
-  }
-
-  /**
-   * The provided callback will be called when a request is not authorized.
-   */
-  public onNotAuthorizedError(callback: ErrorCallback): this {
-    this._onNotAuthorizedErrorCb = callback;
+  public fire(event: string, ...args: any[]): this {
+    this._events.fire(event, ...args);
     return this;
   }
 }
