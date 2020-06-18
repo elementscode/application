@@ -1,7 +1,7 @@
 {
   "name": "@elements/application",
   "description": "The elements web framework.",
-  "version": "1.0.0-alpha10",
+  "version": "0.0.0",
   "license": "SEE LICENSE IN LICENSE",
   "browser": {
     "./app-middleware": false,
@@ -16,9 +16,9 @@
     "./call-server": false
   },
   "dependencies": {
-    "@elements/json": "1.0.0-alpha10",
-    "@elements/runtime": "1.0.0-alpha10",
-    "@elements/utils": "1.0.0-alpha10",
+    "@elements/json": "0.0.0",
+    "@elements/runtime": "0.0.0",
+    "@elements/utils": "0.0.0",
     "base64-url": "2.3.3",
     "debug": "4.1.1",
     "mime": "2.4.6",
@@ -38,5 +38,8 @@
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },
-  "scripts": {}
+  "scripts": {},
+  "files": [
+    "./src"
+  ]
 }
