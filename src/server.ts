@@ -291,9 +291,7 @@ export class Server {
     let timer = new Timer();
     timer.start();
 
-    // XXX can we set the id here?
     let session = createSessionFromHttp(req, res, this.getSessionOpts());
-
     let logger = this.createLoggerForSession(session);
     logger.tag('http', httpColor);
 

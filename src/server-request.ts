@@ -183,27 +183,30 @@ export class ServerRequest implements IRequest {
     }
 
     let distJsonFile = this._distJson.targets['main'].files[distRelPath];
-    let pageBundle = this._distJson.targets['browser'].bundles[distJsonFile.source];
     let bootBundle = this._distJson.targets['browser'].bundles['boot'];
+    let appBundle = this._distJson.targets['browser'].bundles['app'];
+    let pageBundle = this._distJson.targets['browser'].bundles[distJsonFile.source];
 
     let cssTags: string[];
     cssTags = bootBundle.style.map(file => {
-      let dataSourceOrIgnore = file.source ? `data-source="${file.source}"` : 'data-loader="ignore"';
-      return `<link rel="stylesheet" href="${file.url}" ${dataSourceOrIgnore}>`
+      return `<link rel="stylesheet" href="${file.url}" data-loader="ignore">`
     });
+    cssTags = cssTags.concat(appBundle.style.map(file => {
+      return `<link rel="stylesheet" href="${file.url}">`
+    }));
     cssTags = cssTags.concat(pageBundle.style.map(file => {
-      let dataSourceOrIgnore = file.source ? `data-source="${file.source}"` : 'data-loader="ignore"';
-      return `<link rel="stylesheet" href="${file.url}" ${dataSourceOrIgnore}>`
+      return `<link rel="stylesheet" href="${file.url}">`
     }));
 
     let scriptTags: string[];
     scriptTags = bootBundle.code.map(file => {
-      let dataSourceOrIgnore = file.source ? `data-source="${file.source}"` : 'data-loader="ignore"';
-      return `<script type="text/javascript" src="${file.url}" ${dataSourceOrIgnore}></script>`
+      return `<script type="text/javascript" src="${file.url}" data-loader="ignore"></script>`
     })
+    scriptTags = scriptTags.concat(appBundle.code.map(file => {
+      return `<script type="text/javascript" src="${file.url}"></script>`
+    }));
     scriptTags = scriptTags.concat(pageBundle.code.map(file => {
-      let dataSourceOrIgnore = file.source ? `data-source="${file.source}"` : 'data-loader="ignore"';
-      return `<script type="text/javascript" src="${file.url}" ${dataSourceOrIgnore}></script>`
+      return `<script type="text/javascript" src="${file.url}"></script>`
     }));
 
     let defaultMetaTags: IMetaTag[] = [
