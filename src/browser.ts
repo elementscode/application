@@ -795,10 +795,11 @@ export class Browser {
     return this;
   }
 
-  protected onRestartMessage(message: IRestartMessage): void {
+  protected async onRestartMessage(message: IRestartMessage): Promise<void> {
     debug('reload');
     window['bundles'] = message.bundles;
-    this.run(location.pathname + location.search + location.hash);
+    await window['loader'].load(this.getCurrentVPath());
+    await this.run(location.pathname + location.search + location.hash);
     this.app.fire('reload');
   }
 
