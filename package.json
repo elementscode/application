@@ -41,8 +41,5 @@
   "scripts": {
     "copyfiles": "cp README.md LICENSE.txt package.json .elements/dist",
     "build": "mkdir -p .elements/dist && tsc && yarn run copyfiles"
-  },
-  "files": [
-    "./src"
-  ]
+  }
 }
