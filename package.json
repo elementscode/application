@@ -2,7 +2,7 @@
   "name": "@elements/application",
   "description": "The elements web framework.",
   "version": "0.0.0",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "browser": {
     "./app-middleware": false,
     "./asset-middleware": false,
@@ -38,7 +38,10 @@
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },
-  "scripts": {},
+  "scripts": {
+    "copyfiles": "cp README.md LICENSE.txt package.json .elements/dist",
+    "build": "mkdir -p .elements/dist && tsc && yarn run copyfiles"
+  },
   "files": [
     "./src"
   ]
