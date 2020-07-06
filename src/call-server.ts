@@ -44,13 +44,10 @@ export async function call<T = any>(opts: ICallOptions): Promise<T> {
     throw new NotFoundError(`The service function ${opts.method} was not found.`);
   }
 
-  try {
-    let service = new Service({
-      session: opts.session,
-      logger: opts.logger,
-    });
+  let service = new Service({
+    session: opts.session,
+    logger: opts.logger,
+  });
 
-    return exports[funcName].apply(service, opts.args);
-  } finally {
-  }
+  return exports[funcName].apply(service, opts.args);
 }

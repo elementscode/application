@@ -114,7 +114,26 @@ export class BrowserRequest implements IRequest {
     this._browser.go(url, options);
   }
 
-  public async render<T = any>(vpath: string, attrs: T): Promise<void> {
+  /**
+   * Makes a remote procedure call over the network to the given service
+   * function.
+   *
+   * @param method - The namespace delimited method name (e.g.
+   * users.getUserData).
+   * @param [args] - Positional arguments passed to the service function.
+   */
+  public call<T = any>(method: string, ...args: any[]): Promise<T> {
+    return this._browser.call(method, ...args);
+  }
+
+  /**
+   * Renders a view to the page.
+   *
+   * @param vpath - The virtual path (e.g. project://app/pages/home/index.tsx)
+   * to the page and its bundle.
+   * @param [attrs] - Initial data attributes for the view.
+   */
+  public async render<T = any>(vpath: string, attrs?: T): Promise<void> {
     debug('render %s', vpath);
 
     try {

@@ -16,16 +16,16 @@ export interface IServiceOpts {
 }
 
 export class Service {
-  session: Session;
+  public session: Session;
 
-  logger: Logger;
+  public logger: Logger;
 
-  constructor(opts: IServiceOpts) {
+  public constructor(opts: IServiceOpts) {
     this.session = opts.session;
     this.logger = opts.logger;
   }
 
-  async authorize(callback: AuthorizeCallback | boolean): Promise<void> {
+  public async authorize(callback: AuthorizeCallback | boolean): Promise<void> {
     let isAuthorized: boolean = false;
 
     if (typeof callback === 'boolean') {
@@ -39,7 +39,7 @@ export class Service {
     }
   }
 
-  static create(opts: IServiceOpts): Service {
+  public static create(opts: IServiceOpts): Service {
     return new Service(opts);
   }
 }
