@@ -69,7 +69,7 @@ export class Config {
    * @param defaultValue - A default value. If the the property value is
    * undefined the defaultValue will be returned.
    */
-  public getOrThrow(path: string | Iterable<string>, defaultValue?: any): any {
+  public getOrThrow<V = any>(path: string | Iterable<string>, defaultValue?: any): V {
     let result = this.get(path, defaultValue);
 
     if (typeof result === 'undefined' && arguments.length === 1) {

@@ -26,7 +26,7 @@ export function createSessionId(): string {
  * the http response.
  */
 export function createSessionFromHttp(req: http.IncomingMessage, res: http.ServerResponse, opts: ISessionOptions): Session {
-  let cookie = extractCookie(<string | string[] | undefined>req.headers['cookie']);
+  let cookie = extractCookie(<string | string[] | undefined>req.headers['cookie'], opts);
   let session = createSessionFromCookie(cookie, opts);
   onBeforeSendHeaders(res, () => setSessionCookieOnHttpResponse(session, res));
   return session;

@@ -11,7 +11,7 @@ const SESSION_FORMAT_VERSION = 1;
 
 export class Session {
   /**
-   * The cookie name (defaults to elements_session).
+   * The cookie name (defaults to session).
    */
   key: string;
 
@@ -74,7 +74,7 @@ export class Session {
    * Constructs a new Session instance.
    */
   public constructor(opts: ISessionOptions = {}) {
-    this.key = opts.key || 'elements_session';
+    this.key = opts.key || 'session';
     this.id = this.createId();
     this.signatureVerified = true;
     this.csrf = '';
@@ -241,8 +241,9 @@ export class Session {
  * extracts the cookie value with the specific key, or undefined if that cookie
  * doesn't exist in the string.
  */
-export function extractCookie(cookies: string | string[] | undefined): string | undefined {
-  let re = new RegExp("session=([^;]+)");
+export function extractCookie(cookies: string | string[] | undefined, opts: ISessionOptions = {}): string | undefined {
+  let key = opts.key || 'session';
+  let re = new RegExp(`${key}=([^;]+)`);
   let match;
 
   if (typeof cookies === 'string') {

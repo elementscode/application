@@ -39,7 +39,8 @@
     "react-dom": "16.13.1"
   },
   "scripts": {
-    "copyfiles": "cp README.md LICENSE.txt package.json .elements/dist",
-    "build": "mkdir -p .elements/dist && tsc && yarn run copyfiles"
+    "clean": "rm -rf .elements/dist",
+    "copyfiles": "mkdir -p .elements/dist && cp README.md LICENSE.txt package.json .elements/dist",
+    "build": "yarn run clean && yarn run copyfiles && tsc"
   }
 }

@@ -110,8 +110,8 @@ export class Server {
 
   protected getSessionOpts(): ISessionOptions {
     return {
-      key: this.config.get<string>('session.key', 'elements_session'),
-      password: this.config.get<string>('session.password', 'p@ssw0rd!'),
+      key: this.config.get<string>('session.key', 'session'),
+      password: this.config.getOrThrow<string>('session.password'),
       loggedInExpires: this.config.get<number|undefined>('session.loggedInExpires', undefined),
       loggedOutExpires: this.config.get<number|undefined>('session.loggedOutExpires', undefined),
     };
