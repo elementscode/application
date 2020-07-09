@@ -23,23 +23,6 @@ import {
   IMetaTag,
 } from './types';
 
-let htmlTemplate = `
-<!doctype html>
-<html>
-  <head>
-    {title}
-    <meta charset="utf-8">
-    {meta}
-    {style}
-    {code}
-  </head>
-
-  <body>
-    <div id="app">{body}</div>
-  </body>
-</html>
-`;
-
 export interface IServerRequestOpts {
   app: Application;
   distJson: IDistJson;
@@ -47,6 +30,7 @@ export interface IServerRequestOpts {
   res: http.ServerResponse;
   logger: Logger;
   session: Session;
+  htmlTemplate: string;
 }
 
 export class ServerRequest implements IRequest {
@@ -57,6 +41,7 @@ export class ServerRequest implements IRequest {
   public params: Map<any, any>;
   public parsedUrl: ParsedUrl;
   
+  private _htmlTemplate: string;
   private _app: Application;
   private _meta: {[index: string]: IMetaTag};
   private _title: string;
@@ -85,6 +70,7 @@ export class ServerRequest implements IRequest {
     this.logger = opts.logger;
     this.session = opts.session;
     this.parsedUrl = ParsedUrl(this.req.url, true /* parse query string */);
+    this._htmlTemplate = opts.htmlTemplate;
     this._app = opts.app;
     this._distJson = opts.distJson;
     this._meta = {};
@@ -228,23 +214,23 @@ export class ServerRequest implements IRequest {
     let el = React.createElement(view, data);
     let body = ReactDOMServer.renderToString(el);
 
-    let html: string = htmlTemplate;
-    html = html.replace('{title}', `<title>${this.title()}</title>`);
-    html = html.replace('{meta}', indent(metaTags, 4, true));
+    let html: string = this._htmlTemplate;
+    html = html.replace('{{title}}', `<title>${this.title()}</title>`);
+    html = html.replace('{{meta}}', indent(metaTags, 4, true));
 
     if (cssTags.length > 0) {
-      html = html.replace('{style}', indent(cssTags.join('\n'), 4, true));
+      html = html.replace('{{style}}', indent(cssTags.join('\n'), 4, true));
     } else {
-      html = html.replace('{style}', '');
+      html = html.replace('{{style}}', '');
     }
 
     if (scriptTags.length > 0) {
-      html = html.replace('{code}', indent(scriptTags.join('\n'), 4, true));
+      html = html.replace('{{code}}', indent(scriptTags.join('\n'), 4, true));
     } else {
-      html = html.replace('{code}', '');
+      html = html.replace('{{code}}', '');
     }
 
-    html = html.replace('{body}', indent(body, 4, true));
+    html = html.replace('{{body}}', indent(body, 4, true));
 
     return html;
   }

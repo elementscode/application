@@ -59,6 +59,22 @@ const subtleColor = 8;
 const userIdColor = 3;
 const httpColor = 32;
 const wsColor = 68;
+const defaultHtmlTemplate = `
+<!doctype html>
+<html>
+  <head>
+    {{title}}
+    <meta charset="utf-8">
+    {{meta}}
+    {{style}}
+    {{code}}
+  </head>
+
+  <body>
+    <div id="app">{{body}}</div>
+  </body>
+</html>
+`;
 
 export class IServerOptions {
   env: string;
@@ -75,6 +91,7 @@ export class Server {
   private opts: IServerOptions;
   private config: Config;
   private wsServer: WebSocket.Server;
+  private htmlTemplate: string
 
   public constructor(opts: IServerOptions) {
     this.opts = withDefaultValues(opts || {}, {
@@ -146,6 +163,7 @@ export class Server {
     debug('load');
     this.config = this.getProjectConfig();
     this.app = app;
+    this.loadHtmlTemplate();
     this.readDistJson();
     this.loadMiddleware();
   }
@@ -308,6 +326,7 @@ export class Server {
       res: res,
       logger: logger,
       session: session,
+      htmlTemplate: this.htmlTemplate,
     });
 
     try {
@@ -524,6 +543,17 @@ export class Server {
 
   sendMessage(socket: WebSocket, message: IMessage): void {
     socket.send(stringify(message));
+  }
+
+  loadHtmlTemplate() {
+    try {
+      // try using config/app.html first
+      let filePath = path.join(process.cwd(), 'config', 'app.html');
+      this.htmlTemplate = fs.readFileSync(filePath, 'utf8');
+    } catch(err) {
+      // if it doesn't exist then use the default
+      this.htmlTemplate = defaultHtmlTemplate;
+    }
   }
 
   getProjectConfig(): Config {
