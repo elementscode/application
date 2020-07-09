@@ -10,6 +10,7 @@ export * from './config';
 export * from './errors';
 export * from './logger';
 export * from './middleware-stack';
+export * from './migration';
 export * from './route';
 export * from './router';
 export * from './server-request';
