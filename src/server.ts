@@ -111,7 +111,7 @@ export class Server {
   protected getSessionOpts(): ISessionOptions {
     return {
       key: this.config.get<string>('session.key', 'session'),
-      password: this.config.getOrThrow<string>('session.password'),
+      password: this.config.getOrThrow<string>('session.secret'),
       loggedInExpires: this.config.get<number|undefined>('session.loggedInExpires', undefined),
       loggedOutExpires: this.config.get<number|undefined>('session.loggedOutExpires', undefined),
     };
@@ -528,7 +528,7 @@ export class Server {
 
   getProjectConfig(): Config {
     try {
-      let exports = require(path.join(process.cwd(), 'config'));
+      let exports = require(path.join(process.cwd(), 'app', 'config'));
       if (exports instanceof Config) {
         return exports;
       } else if (exports.default instanceof Config) {
