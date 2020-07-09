@@ -153,11 +153,14 @@ export class ServerRequest implements IRequest {
   }
 
   protected getETag(importPath: string, data: any = {}): string {
-    let rootBundle: IDistJsonBundle = this._distJson.targets['browser'].bundles['boot'];
+    let bootBundle: IDistJsonBundle = this._distJson.targets['browser'].bundles['boot'];
+    let appBundle: IDistJsonBundle = this._distJson.targets['browser'].bundles['app'];
     let pageBundle: IDistJsonBundle = this._distJson.targets['browser'].bundles[importPath];
     let hasher = crypto.createHash('sha512');
-    hasher.write(rootBundle.version);
+    hasher.write(bootBundle.version);
+    hasher.write(appBundle.version);
     hasher.write(pageBundle.version);
+    hasher.write(this._htmlTemplate);
     hasher.write(JSON.stringify(data));
     return hasher.digest('hex').slice(0, 10);
   }
