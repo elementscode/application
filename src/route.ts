@@ -8,7 +8,7 @@ import {
 /**
  * The type signature for a route handler callback.
  */
-export type RouteHandler = (req: IRequest) => Promise<void>;
+export type RouteHandler = (this: IRequest, req?: IRequest) => Promise<void>;
 
 /**
  * A single route in a set of routes in the router.
@@ -73,7 +73,7 @@ export class Route implements IRoute {
     this.keys.forEach((key, idx) => {
       req['params'].set(key.name, paramValues[idx]);
     });
-    await this.handler(req);
+    await this.handler.call(req, req);
     return true;
   }
 }

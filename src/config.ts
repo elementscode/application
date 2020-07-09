@@ -73,7 +73,7 @@ export class Config {
     let result = this.get(path, defaultValue);
 
     if (typeof result === 'undefined' && arguments.length === 1) {
-      throw new Error(`Missing required options value: "${path}".`);
+      throw new Error(`Missing required config value: "${path}".`);
     }
 
     return result;
