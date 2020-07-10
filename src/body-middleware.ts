@@ -1,24 +1,27 @@
 import { ServerRequest } from './server-request';
 import { ParamsObject } from './params-object';
+import {
+  NotAcceptableError
+} from './errors';
 
 export class BodyMiddleware {
   constructor() {
   }
 
   async run(req: ServerRequest, next: () => Promise<void>): Promise<void> {
-    switch (req.header('content-type')) {
-      case 'application/json':
-        return parseJsonBody(req, next);
+    let contentType: string = req.header('content-type') as string;
 
-      case 'multipart/form-data':
-        return parseMultipartFormDataBody(req, next);
-
-      case 'application/x-www-form-urlencoded':
-        return parseFormUrlEncodedBody(req, next);
-
-      default:
-        return next();
+    if (/application\/json/.test(contentType)) {
+      return parseJsonBody(req, next);
+    } else if (/multipart\/form-data/.test(contentType)) {
+      return parseMultipartFormDataBody(req, next);
+    } else if (/application\/x-www-form-urlencoded/.test(contentType)) {
+      return parseFormUrlEncodedBody(req, next);
+    } else if (/text\/plain/.test(contentType)) {
+      return parsePlainTextBody(req, next);
     }
+
+    return next();
   }
 }
 
@@ -27,18 +30,53 @@ async function parseJsonBody(req: ServerRequest, next: () => Promise<void>): Pro
     req.body = new ParamsObject(JSON.parse(await read(req)));
     return next();
   } catch (err) {
-    req.status(406);
-    req.write(err + '\n');
-    req.end();
+    throw new NotAcceptableError(err.message);
   }
 }
 
+const reMultiPartBoundary = /boundary=(--[^\n\s]+)/
+
 async function parseMultipartFormDataBody(req: ServerRequest, next: () => Promise<void>): Promise<void> {
-  next();
+  try {
+    let boundary = getContentTypeBoundaryOrThrow(req);
+
+
+    req.body = new ParamsObject({
+      value: await read(req)
+    });
+
+    console.log(req.body.get('value'));
+
+    return next();
+  } catch (err) {
+    throw new NotAcceptableError(err.message);
+  }
 }
 
 async function parseFormUrlEncodedBody(req: ServerRequest, next: () => Promise<void>): Promise<void> {
-  next();
+  try {
+    req.body = new ParamsObject({
+      value: await read(req)
+    });
+
+    console.log(req.body.get('value'));
+
+    return next();
+  } catch (err) {
+    throw new NotAcceptableError(err.message);
+  }
+}
+
+async function parsePlainTextBody(req: ServerRequest, next: () => Promise<void>): Promise<void> {
+  try {
+    req.body = new ParamsObject({
+      value: await read(req)
+    });
+
+    return next();
+  } catch (err) {
+    throw new NotAcceptableError(err.message);
+  }
 }
 
 async function read(req: ServerRequest): Promise<string> {
@@ -49,3 +87,14 @@ async function read(req: ServerRequest): Promise<string> {
     req.req.on('error', (err) => reject(err));
   });
 }
+
+function getContentTypeBoundaryOrThrow(req: ServerRequest): string {
+  let contentType = req.header('content-type') as string;
+  let boundaryMatch = reMultiPartBoundary.exec(contentType);
+  if (!boundaryMatch) {
+    throw new Error('missing boundary in Content-Type header.');
+  }
+  let boundary = boundaryMatch[1];
+  return boundary;
+}
+

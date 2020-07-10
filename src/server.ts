@@ -363,10 +363,10 @@ export class Server {
         }
       } else if (err instanceof NotFoundError) {
         request.status(404);
-        request.write(err.toString());
+        request.write(err.message + '\n');
       } else if (err instanceof NotAcceptableError) {
         request.status(406);
-        request.write(err.toString());
+        request.write(err.message + '\n');
       } else {
         try {
           request.status(500);

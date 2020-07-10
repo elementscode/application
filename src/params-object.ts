@@ -21,7 +21,7 @@ export class ParamsObject {
   public getOrThrow<T = any>(key: string | Iterable<string>): T | undefined {
     let result: T | undefined = this.get<T>(key);
     if (typeof result === 'undefined') {
-      throw new NotAcceptableError(`Missing "${key}".`);
+      throw new NotAcceptableError(`Missing parameter: "${key}"`);
     }
     return result;
   }
