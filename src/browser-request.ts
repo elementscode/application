@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as ParsedUrl from 'url-parse';
-import { SuperObject } from '@elements/utils';
 import { stringify } from '@elements/json';
+import { ParamsObject } from './params-object';
 import { Application } from './application';
 import { Browser } from './browser';
 import { Session } from './session';
@@ -28,7 +28,7 @@ export class BrowserRequest implements IRequest {
   public session: Session;
   public url: string
   public params: any;
-  public body: SuperObject;
+  public body: ParamsObject;
   public parsedUrl: ParsedUrl;
   private _app: Application;
   private _browser: Browser;
@@ -53,7 +53,7 @@ export class BrowserRequest implements IRequest {
     this.session = opts.session;
     this.url = opts.url;
     this.parsedUrl = ParsedUrl(opts.url, true /* parse query string */);
-    this.body = new SuperObject();
+    this.body = new ParamsObject();
     this._app = opts.app;
     this._logger = opts.logger;
     this._browser = opts.browser;

@@ -10,13 +10,13 @@ import {
   indent,
   capitalize,
   diskPath,
-  SuperObject,
 } from '@elements/utils';
 import { Logger } from './logger';
 import { debug } from './debug';
 import { Application } from './application';
 import { Session } from './session';
 import { call } from './call-server';
+import { ParamsObject } from './params-object';
 import {
   IHeaderMap,
   HeaderValue,
@@ -40,7 +40,7 @@ export class ServerRequest implements IRequest {
   public session: Session;
   public logger: Logger;
   public params: any;
-  public body: SuperObject;
+  public body: ParamsObject;
   public parsedUrl: ParsedUrl;
   
   private _htmlTemplate: string;
@@ -72,7 +72,7 @@ export class ServerRequest implements IRequest {
     this.logger = opts.logger;
     this.session = opts.session;
     this.parsedUrl = ParsedUrl(this.req.url, true /* parse query string */);
-    this.body = new SuperObject();
+    this.body = new ParamsObject();
     this._htmlTemplate = opts.htmlTemplate;
     this._app = opts.app;
     this._distJson = opts.distJson;

@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as ParsedUrl from 'url-parse';
-import { SuperObject } from '@elements/utils';
+import { ParamsObject } from './params-object';
 import { IDistJsonBundle } from '@elements/runtime';
 import { Session } from './session';
 import { ServerRequest } from './server-request';
@@ -40,8 +40,8 @@ export interface IRequest {
   meta(value?: IMetaTag);
   parsedUrl: ParsedUrl;
   url: string;
-  params: SuperObject;
-  body: SuperObject;
+  params: ParamsObject;
+  body: ParamsObject;
   query: {[key: string]: any};
   hash: string;
   method: string;

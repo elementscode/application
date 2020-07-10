@@ -18,6 +18,7 @@ import { ServerRequest } from './server-request';
 import { Service } from './service';
 import { Application } from './application';
 import { AssetMiddleware } from './asset-middleware';
+import { BodyMiddleware } from './body-middleware';
 import { AppMiddleware } from './app-middleware';
 import { MiddlewareStack } from './middleware-stack';
 import { Session } from './session';
@@ -172,6 +173,7 @@ export class Server {
     debug('load middleware');
     this.middleware.clear();
     this.middleware.add(new AssetMiddleware({ distJson: this.distJson }));
+    this.middleware.add(new BodyMiddleware());
     this.middleware.add(new AppMiddleware({app: this.app}));
   }
 
@@ -359,6 +361,12 @@ export class Server {
           request.status(500);
           logger.log('%s', indent(err.stack, 2));
         }
+      } else if (err instanceof NotFoundError) {
+        request.status(404);
+        request.write(err.toString());
+      } else if (err instanceof NotAcceptableError) {
+        request.status(406);
+        request.write(err.toString());
       } else {
         try {
           request.status(500);
