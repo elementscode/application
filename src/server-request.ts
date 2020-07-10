@@ -10,6 +10,7 @@ import {
   indent,
   capitalize,
   diskPath,
+  SuperObject,
 } from '@elements/utils';
 import { Logger } from './logger';
 import { debug } from './debug';
@@ -38,7 +39,8 @@ export class ServerRequest implements IRequest {
   public res?: http.ServerResponse;
   public session: Session;
   public logger: Logger;
-  public params: Map<any, any>;
+  public params: any;
+  public body: SuperObject;
   public parsedUrl: ParsedUrl;
   
   private _htmlTemplate: string;
@@ -70,6 +72,7 @@ export class ServerRequest implements IRequest {
     this.logger = opts.logger;
     this.session = opts.session;
     this.parsedUrl = ParsedUrl(this.req.url, true /* parse query string */);
+    this.body = new SuperObject();
     this._htmlTemplate = opts.htmlTemplate;
     this._app = opts.app;
     this._distJson = opts.distJson;

@@ -1,4 +1,5 @@
 import { pathToRegexp, Key } from 'path-to-regexp';
+import { SuperObject } from '@elements/utils';
 
 import {
   IRequest,
@@ -69,9 +70,9 @@ export class Route implements IRoute {
     // this.keys.
     let paramValues: any[] = match.slice(1);
 
-    req['params'] = new Map();
+    req.params = new SuperObject();
     this.keys.forEach((key, idx) => {
-      req['params'].set(key.name, paramValues[idx]);
+      req.params.set(key.name as string, paramValues[idx]);
     });
     await this.handler.call(req, req);
     return true;
