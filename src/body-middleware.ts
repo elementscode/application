@@ -2,10 +2,13 @@ import * as fs from 'fs';
 import { ServerRequest } from './server-request';
 import { ParamsObject } from './params-object';
 import { ParseError } from './parser';
+import { File } from './file';
 import { MultipartForm, parseHeaderValueFields } from './multipart-form';
 import {
   NotAcceptableError
 } from './errors';
+
+let reIsNumber = /[0-9]+(\.[0-9]+)?/
 
 export class BodyMiddleware {
   constructor() {
@@ -43,12 +46,25 @@ async function parseMultipartFormDataBody(req: ServerRequest, next: () => Promis
     let form = await MultipartForm.parse(req);
 
     for (let part of form.parts) {
-      console.log(part);
       let disposition = part.headers.get('content-disposition');
-      let fields = parseHeaderValueFields(part.headers.get('content-disposition'));
-      if (fields.has('filename')) {
-        fs.writeFileSync('./out', part.body);
-        console.log('file: %s, size: %d', fields.get('filename'), part.body.length);
+      let contentType = part.headers.get('content-type');
+      let dispositionFields = parseHeaderValueFields(part.headers.get('content-disposition'));
+      if (dispositionFields.has('filename')) {
+        let file = new File(dispositionFields.get('filename'));
+        file.body = part.body;
+        file.size = part.body.length;
+        file.contentType = contentType || 'application/octet-stream';
+        req.params.set(dispositionFields.get('name'), file);
+      } else {
+        if (contentType == 'text/plain' || contentType == '') {
+          let value: string | number = part.body.toString();
+          if (reIsNumber.test(value)) {
+            value = Number.parseFloat(value);
+          }
+          req.params.set(dispositionFields.get('name'), value);
+        } else {
+          req.params.set(dispositionFields.get('name'), part.body);
+        }
       }
     }
 

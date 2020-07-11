@@ -8,6 +8,7 @@ export * from './browser-request';
 export * from './browser';
 export * from './config';
 export * from './errors';
+export * from './file';
 export * from './is';
 export * from './logger';
 export * from './middleware-stack';
