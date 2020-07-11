@@ -70,7 +70,6 @@ export class Route implements IRoute {
     // this.keys.
     let paramValues: any[] = match.slice(1);
 
-    req.params = new ParamsObject();
     this.keys.forEach((key, idx) => {
       req.params.set(key.name as string, paramValues[idx]);
     });

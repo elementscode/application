@@ -41,7 +41,6 @@ export interface IRequest {
   parsedUrl: ParsedUrl;
   url: string;
   params: ParamsObject;
-  body: ParamsObject;
   query: {[key: string]: any};
   hash: string;
   method: string;

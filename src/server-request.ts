@@ -39,8 +39,7 @@ export class ServerRequest implements IRequest {
   public res?: http.ServerResponse;
   public session: Session;
   public logger: Logger;
-  public params: any;
-  public body: ParamsObject;
+  public params: ParamsObject;
   public parsedUrl: ParsedUrl;
   
   private _htmlTemplate: string;
@@ -72,7 +71,7 @@ export class ServerRequest implements IRequest {
     this.logger = opts.logger;
     this.session = opts.session;
     this.parsedUrl = ParsedUrl(this.req.url, true /* parse query string */);
-    this.body = new ParamsObject();
+    this.params = new ParamsObject();
     this._htmlTemplate = opts.htmlTemplate;
     this._app = opts.app;
     this._distJson = opts.distJson;
@@ -281,6 +280,14 @@ export class ServerRequest implements IRequest {
 
   public log(msg: string, ...args: any[]): void {
     this.logger.log(msg, ...args);
+  }
+
+  public async read(): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      let buffers: Buffer[] = [];
+      this.req.on('data', chunk => buffers.push(chunk));
+      this.req.on('end', () => resolve(Buffer.concat(buffers)));
+    });
   }
 }
 

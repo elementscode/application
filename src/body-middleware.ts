@@ -1,5 +1,8 @@
+import * as fs from 'fs';
 import { ServerRequest } from './server-request';
 import { ParamsObject } from './params-object';
+import { ParseError } from './parser';
+import { MultipartForm, parseHeaderValueFields } from './multipart-form';
 import {
   NotAcceptableError
 } from './errors';
@@ -27,40 +30,41 @@ export class BodyMiddleware {
 
 async function parseJsonBody(req: ServerRequest, next: () => Promise<void>): Promise<void> {
   try {
-    req.body = new ParamsObject(JSON.parse(await read(req)));
+    let jsonValue = JSON.parse((await req.read()).toString());
+    Object.assign(req.params, jsonValue);
     return next();
   } catch (err) {
     throw new NotAcceptableError(err.message);
   }
 }
 
-const reMultiPartBoundary = /boundary=(--[^\n\s]+)/
-
 async function parseMultipartFormDataBody(req: ServerRequest, next: () => Promise<void>): Promise<void> {
   try {
-    let boundary = getContentTypeBoundaryOrThrow(req);
+    let form = await MultipartForm.parse(req);
 
-
-    req.body = new ParamsObject({
-      value: await read(req)
-    });
-
-    console.log(req.body.get('value'));
+    for (let part of form.parts) {
+      console.log(part);
+      let disposition = part.headers.get('content-disposition');
+      let fields = parseHeaderValueFields(part.headers.get('content-disposition'));
+      if (fields.has('filename')) {
+        fs.writeFileSync('./out', part.body);
+        console.log('file: %s, size: %d', fields.get('filename'), part.body.length);
+      }
+    }
 
     return next();
   } catch (err) {
-    throw new NotAcceptableError(err.message);
+    if (err instanceof ParseError) {
+      throw new NotAcceptableError(err.message);
+    } else {
+      throw err;
+    }
   }
 }
 
 async function parseFormUrlEncodedBody(req: ServerRequest, next: () => Promise<void>): Promise<void> {
   try {
-    req.body = new ParamsObject({
-      value: await read(req)
-    });
-
-    console.log(req.body.get('value'));
-
+    req.params.set('body', await req.read());
     return next();
   } catch (err) {
     throw new NotAcceptableError(err.message);
@@ -69,32 +73,9 @@ async function parseFormUrlEncodedBody(req: ServerRequest, next: () => Promise<v
 
 async function parsePlainTextBody(req: ServerRequest, next: () => Promise<void>): Promise<void> {
   try {
-    req.body = new ParamsObject({
-      value: await read(req)
-    });
-
+    req.params.set('body', await req.read());
     return next();
   } catch (err) {
     throw new NotAcceptableError(err.message);
   }
 }
-
-async function read(req: ServerRequest): Promise<string> {
-  return new Promise(function(accept, reject) {
-    let buffer: string[] = [];
-    req.req.on('data', (chunk) => buffer.push(chunk.toString()));
-    req.req.on('end', () => accept(buffer.join('')));
-    req.req.on('error', (err) => reject(err));
-  });
-}
-
-function getContentTypeBoundaryOrThrow(req: ServerRequest): string {
-  let contentType = req.header('content-type') as string;
-  let boundaryMatch = reMultiPartBoundary.exec(contentType);
-  if (!boundaryMatch) {
-    throw new Error('missing boundary in Content-Type header.');
-  }
-  let boundary = boundaryMatch[1];
-  return boundary;
-}
-
