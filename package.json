@@ -13,7 +13,8 @@
     "./types": false,
     "./start": "./start-browser",
     "./session-server": "./session-browser",
-    "./call-server": false
+    "./call": "./call-browser",
+    "./migration": false
   },
   "dependencies": {
     "@elements/json": "0.0.0",

@@ -53,7 +53,7 @@ async function parseMultipartFormDataBody(req: ServerRequest, next: () => Promis
         let file = new File(dispositionFields.get('filename'));
         file.body = part.body;
         file.size = part.body.length;
-        file.contentType = contentType || 'application/octet-stream';
+        file.type = contentType || 'application/octet-stream';
         req.params.set(dispositionFields.get('name'), file);
       } else {
         if (contentType == 'text/plain' || contentType == '') {

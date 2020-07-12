@@ -15,7 +15,7 @@ import { Logger } from './logger';
 import { debug } from './debug';
 import { Application } from './application';
 import { Session } from './session';
-import { call } from './call-server';
+import { findAndCallServiceFunction } from './service';
 import { ParamsObject } from './params-object';
 import {
   IHeaderMap,
@@ -81,7 +81,7 @@ export class ServerRequest implements IRequest {
   }
 
   public async call<T = any>(method: string, ...args: any[]): Promise<T> {
-    return call({
+    return findAndCallServiceFunction({
       session: this.session,
       logger: this.logger,
       method: method,

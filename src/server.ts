@@ -15,7 +15,7 @@ import { IDistJson, IDistJsonFileChangeSets } from '@elements/runtime';
 import { color } from './ansi';
 import { Logger } from './logger';
 import { ServerRequest } from './server-request';
-import { Service } from './service';
+import { findAndCallServiceFunction } from './service';
 import { Application } from './application';
 import { AssetMiddleware } from './asset-middleware';
 import { BodyMiddleware } from './body-middleware';
@@ -29,7 +29,6 @@ import {
 } from './session-server';
 import { success } from './ansi';
 import { onBeforeSendHeaders } from './headers';
-import { call } from './call-server';
 import { Config } from './config';
 import {
   StandardError,
@@ -438,7 +437,7 @@ export class Server {
     try {
       logger.log('%s', message.method);
 
-      let retval = await call({
+      let retval = await findAndCallServiceFunction({
         session: session,
         logger: logger,
         method: message.method,
