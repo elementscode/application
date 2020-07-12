@@ -11,17 +11,17 @@ import { ts, TransformationContext } from '@elements/compiler';
 export function buildTargetTransform(ast: ts.SourceFile, ctx: TransformationContext): ts.SourceFile | undefined {
   function visit(node: ts.Node): ts.Node | undefined {
     if (isBuildTargetConditionalIfStatement(node)) {
-      return transformBuildTargetConditionalIfStatement(node, ctx);
+      return transformBuildTargetConditionalIfStatement(<ts.IfStatement>node, ctx);
     } else {
       return ts.visitEachChild(node, visit, ctx as ts.TransformationContext);
     }
   }
 
-  return visit(ast);
+  return ts.visitEachChild(ast, visit, ctx as ts.TransformationContext);
 }
 
-function transformBuildTargetConditionalIfStatement(node: ts.Node, ctx: TransformationContext): ts.Node {
-  let target = getBuildTargetFromCallExpression(node.expression);
+function transformBuildTargetConditionalIfStatement(node: ts.IfStatement, ctx: TransformationContext): ts.Node {
+  let target = getBuildTargetFromCallExpression(node.expression as ts.CallExpression);
   if (target == ctx.getTarget().name) {
     return node.thenStatement;
   } else {
@@ -31,9 +31,10 @@ function transformBuildTargetConditionalIfStatement(node: ts.Node, ctx: Transfor
 
 function isBuildTargetConditionalIfStatement(node: ts.Node): boolean {
   if (node.kind == ts.SyntaxKind.IfStatement) {
-    if (node.expression.kind == ts.SyntaxKind.CallExpression) {
-      let call = node.expression;
-      if (call.expression.escapedText == 'is') {
+    let ifStatement = <ts.IfStatement>node;
+    if (ifStatement.expression.kind == ts.SyntaxKind.CallExpression) {
+      let callExpr = ifStatement.expression as ts.CallExpression;
+      if ((callExpr.expression as ts.Identifier).escapedText == 'is') {
         return true;
       }
     }
@@ -42,10 +43,10 @@ function isBuildTargetConditionalIfStatement(node: ts.Node): boolean {
   return false;
 }
 
-function getBuildTargetFromCallExpression(node: ts.Node): string {
-  if (node.expression.escapedText == 'is') {
+function getBuildTargetFromCallExpression(node: ts.CallExpression): string {
+  if ((node.expression as ts.Identifier).escapedText == 'is') {
     if (node.arguments.length > 0) {
-      let target = node.arguments[0].text;
+      let target = (node.arguments[0] as ts.StringLiteral).text;
       return target == 'server' ? 'main' : target;
     }
   }
