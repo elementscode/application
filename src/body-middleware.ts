@@ -80,7 +80,12 @@ async function parseMultipartFormDataBody(req: ServerRequest, next: () => Promis
 
 async function parseFormUrlEncodedBody(req: ServerRequest, next: () => Promise<void>): Promise<void> {
   try {
-    req.params.set('body', await req.read());
+    let body = (await req.read()).toString().trim();
+    let parts = body.split('&');
+    for (let idx = 0; idx < parts.length; idx++) {
+      let [key, value] = parts[idx].split('=');
+      req.params.set(decodeURIComponent(key), decodeURIComponent(value));
+    }
     return next();
   } catch (err) {
     throw new NotAcceptableError(err.message);
