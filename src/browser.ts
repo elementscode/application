@@ -170,7 +170,7 @@ export class Browser {
     this.setSessionTimers();
     this.connect();
     this.started = true;
-    this.app.fire('start');
+    this.app.fire('started');
     return this;
   }
 
@@ -800,7 +800,7 @@ export class Browser {
     window['bundles'] = message.bundles;
     await window['loader'].load(this.getCurrentVPath());
     await this.run(location.pathname + location.search + location.hash);
-    this.app.fire('reload');
+    this.app.fire('reloaded');
   }
 
   /**

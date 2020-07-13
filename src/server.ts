@@ -144,7 +144,7 @@ export class Server {
 
     this.heartBeatIntervalId = this.startHeartBeat();
     process.on('uncaughtException', (err) => this.onUncaughtError(err));
-    this.opts.app.fire('start');
+    this.opts.app.fire('started');
   }
 
   protected getHttpServerOpts(): http.ServerOptions {
@@ -156,7 +156,7 @@ export class Server {
     this.logger.info("hot reload");
     this.load(app);
     this.sendRestartMessage();
-    app.fire('reload');
+    app.fire('reloaded');
   }
 
   protected load(app: Application) {
