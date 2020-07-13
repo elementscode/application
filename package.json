@@ -22,6 +22,7 @@
     "@elements/runtime": "0.0.0",
     "@elements/utils": "0.0.0",
     "@elements/compiler": "0.0.0",
+    "@elements/postgres": "0.0.0",
     "base64-url": "2.3.3",
     "debug": "4.1.1",
     "mime": "2.4.6",

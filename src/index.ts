@@ -1,6 +1,7 @@
 export * from '@elements/json';
 export * from '@elements/runtime';
 export * from '@elements/compiler';
+export * from '@elements/postgres';
 
 export * from './app-middleware';
 export * from './application';
