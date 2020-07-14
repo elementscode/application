@@ -203,7 +203,7 @@ export class ServerRequest implements IRequest {
     let defaultMetaTags: IMetaTag[] = [
       { name: 'description', content: this.description() },
       { name: 'elements:view', content: vpath },
-      { name: 'elements:data', content: Buffer.from(JSON.stringify(data)).toString('base64') }
+      { name: 'elements:data', content: Buffer.from(stringify(data)).toString('base64') }
     ];
 
     let metaTags: string;

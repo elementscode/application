@@ -287,7 +287,7 @@ export class Browser {
     let attrs: any;
     if (dataMetaEl) {
       try {
-        attrs = JSON.parse(atob(dataMetaEl.content));
+        attrs = parse(atob(dataMetaEl.content));
       } catch(err) {
         console.error(err);
         attrs = {};
