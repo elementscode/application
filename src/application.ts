@@ -8,6 +8,8 @@ import {
   ErrorCallback,
 } from './types';
 
+export type ServerAppCallback = (app: Application) => any;
+
 export class Application implements IRoute {
   private _title: string;
   private _description: string;
