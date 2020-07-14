@@ -9,7 +9,7 @@ export * from './asset-middleware';
 export * from './base64';
 export * from './browser-request';
 export * from './browser';
-export * from './call';
+export * from './helpers';
 export * from './config';
 export * from './errors';
 export * from './file';

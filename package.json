@@ -7,7 +7,7 @@
     "./app-middleware": false,
     "./asset-middleware": false,
     "./body-middleware": false,
-    "./call": "./call-browser",
+    "./helpers": "./helpers-browser",
     "./middleware-stack": false,
     "./migration": false,
     "./server": false,

@@ -827,6 +827,13 @@ export class Browser {
   }
 
   /**
+   * Returns the user's session instance.
+   */
+  public getSession(): Session {
+    return this.getSessionFromCookie(this.getCookie());
+  }
+
+  /**
    * Sets up the session timers from the cookie.
    */
   protected setSessionTimers(): void {
