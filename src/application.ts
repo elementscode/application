@@ -107,4 +107,25 @@ export class Application implements IRoute {
     this._events.fire(event, ...args);
     return this;
   }
+
+  /**
+   * Load server only code.
+   *
+   * Example:
+   *   app.server(require('./server'))
+   *
+   */
+  public server(callback: ServerAppCallback|{default: ServerAppCallback}): this {
+    if (typeof callback === 'undefined') {
+      return this;
+    }
+
+    if (typeof callback === 'function') {
+      callback.call(this, this);
+    } else if (typeof callback.default === 'function') {
+      callback.default.call(this, this);
+    }
+
+    throw new Error('No default export from the server module. The module passed to app.server(require(\'./server\'))  must export a default function like this: `export default function(app) { }`');
+  }
 }

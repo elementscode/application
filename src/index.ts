@@ -9,7 +9,6 @@ export * from './asset-middleware';
 export * from './base64';
 export * from './browser-request';
 export * from './browser';
-export * from './build-target-transform';
 export * from './call';
 export * from './config';
 export * from './errors';

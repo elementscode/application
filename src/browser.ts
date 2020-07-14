@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { parse, stringify } from '@elements/json';
+import { SqlResult } from '@elements/postgres/sql-result';
 import {
   withDefaultValues,
   getUtcTimeNow,
@@ -26,6 +27,9 @@ import {
 } from './types';
 
 const SESSION_WILL_EXPIRE_LEAD_TIME = 60 * 1000;
+
+// note: just to make sure SqlResult doesn't get elided by the ts compiler.
+const sqlResult = SqlResult;
 
 declare global {
   interface Window {
