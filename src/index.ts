@@ -14,7 +14,6 @@ export * from './config';
 export * from './errors';
 export * from './file';
 export * from './form';
-export * from './is';
 export * from './logger';
 export * from './middleware-stack';
 export * from './migration';
