@@ -13,7 +13,7 @@
     "./server": false,
     "./server-request": false,
     "./session-middleware": false,
-    "./session-server": "./session-browser",
+    "./server-session": "./browser-session",
     "./start": "./start-browser",
     "./types": false
   },

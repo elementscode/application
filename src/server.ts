@@ -21,12 +21,12 @@ import { AssetMiddleware } from './asset-middleware';
 import { BodyMiddleware } from './body-middleware';
 import { AppMiddleware } from './app-middleware';
 import { MiddlewareStack } from './middleware-stack';
-import { Session } from './session';
+import { Session, extractCookie } from './session';
 import {
   createSessionFromHttp,
   createSessionFromCookie,
   createCookieFromSession,
-} from './session-server';
+} from './server-session';
 import { success } from './ansi';
 import { onBeforeSendHeaders } from './headers';
 import { Config } from './config';
@@ -144,7 +144,7 @@ export class Server {
 
     this.heartBeatIntervalId = this.startHeartBeat();
     process.on('uncaughtException', (err) => this.onUncaughtError(err));
-    this.opts.app.fire('started');
+    this.app.fire('started');
   }
 
   protected getHttpServerOpts(): http.ServerOptions {
@@ -152,11 +152,13 @@ export class Server {
   }
 
   public restart(app: Application, changed: IDistJsonFileChangeSets) {
-    debug('reload');
-    this.logger.info("hot reload");
+    debug('restart');
+    this.logger.info("hot restart");
+    this.app = app
     this.load(app);
     this.sendRestartMessage();
-    app.fire('reloaded');
+    app.fire('started');
+    app.fire('restarted');
   }
 
   protected load(app: Application) {
@@ -412,7 +414,7 @@ export class Server {
   onWsMessage(socket: WebSocket, data: WebSocket.Data): void {
     try {
       let message = parse(data as string) as IMessage;
-      let session = createSessionFromCookie(message.cookie, this.getSessionOpts());
+      let session = createSessionFromCookie(extractCookie(message.cookie), this.getSessionOpts());
 
       switch (message.type) {
         case 'call':

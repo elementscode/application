@@ -1,6 +1,6 @@
 import { ISessionOptions } from './types';
 import { debug } from './debug';
-import { createSessionId } from './session-server';
+import { createSessionId } from './server-session';
 import { 
   withDefaultValue,
   getUtcTimeNow,
@@ -80,7 +80,7 @@ export class Session {
     this.csrf = '';
     this.loggedInExpires = opts.loggedInExpires;
     this.loggedOutExpires = opts.loggedOutExpires;
-    this.password = opts.password || 'p@ssw0rd!!';
+    this.password = opts.password;
     this.setExpiresTime();
     this.touch();
   }

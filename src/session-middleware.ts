@@ -1,7 +1,7 @@
 import { ServerRequest } from './server-request';
 import { ISessionOptions, IMiddleware } from './types';
 import { Session } from './session';
-import { createSessionFromHttp } from './session-server';
+import { createSessionFromHttp } from './server-session';
 import { debug } from './debug';
 
 declare module 'http' {
