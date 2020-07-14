@@ -174,7 +174,7 @@ export class Browser {
     this.setSessionTimers();
     this.connect();
     this.started = true;
-    this.app.fire('started');
+    this.app.fire('started', [], this.app);
     return this;
   }
 
@@ -378,11 +378,11 @@ export class Browser {
       let found = await this.app.run(req.parsedUrl.pathname, req);
 
       if (!found) {
-        this.app.fire('notFoundError', req);
+        this.app.fire('notFoundError', [req.parsedUrl.pathname], req);
       }
     } catch(err) {
       try {
-        this.app.fire('unhandledError', req, err);
+        this.app.fire('unhandledError', [err], req);
       } catch(err2) {
         console.error(`app.on('unhandledError', ...) threw an error itself. The original error is below. The unhandledError runtime error is: ${err2}`);
         console.error(err);
@@ -804,8 +804,8 @@ export class Browser {
     window['bundles'] = message.bundles;
     await window['loader'].load(this.getCurrentVPath());
     await this.run(location.pathname + location.search + location.hash);
-    this.app.fire('started');
-    this.app.fire('reloaded');
+    this.app.fire('started', [], this.app);
+    this.app.fire('reloaded', [], this.app);
   }
 
   /**

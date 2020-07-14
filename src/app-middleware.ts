@@ -26,7 +26,7 @@ export class AppMiddleware {
 
     if (!found) {
       req.status(404);
-      this.app.fire('notFoundError', req, new NotFoundError(`${req.url} was not found.`))
+      this.app.fire('notFoundError', [new NotFoundError(`${req.url} was not found.`)], req)
       return;
     }
 

@@ -144,7 +144,7 @@ export class Server {
 
     this.heartBeatIntervalId = this.startHeartBeat();
     process.on('uncaughtException', (err) => this.onUncaughtError(err));
-    this.app.fire('started');
+    this.app.fire('started', [], this.app);
   }
 
   protected getHttpServerOpts(): http.ServerOptions {
@@ -157,8 +157,8 @@ export class Server {
     this.app = app
     this.load(app);
     this.sendRestartMessage();
-    app.fire('started');
-    app.fire('restarted');
+    app.fire('started', [], app);
+    app.fire('restarted', [], app);
   }
 
   protected load(app: Application) {
@@ -355,7 +355,7 @@ export class Server {
       if (err instanceof NotAuthorizedError) {
         try {
           request.status(401);
-          this.app.fire('notAuthorized', request, err);
+          this.app.fire('notAuthorized', [err], request);
         } catch (err) {
           // a runtime error happened in the event handler so we need to handle that
           // here as a fallback.
@@ -371,7 +371,7 @@ export class Server {
       } else {
         try {
           request.status(500);
-          this.app.fire('unhandledError', request, err);
+          this.app.fire('unhandledError', [err], request);
         } catch (err) {
           // a runtime error happened in the event handler so we need to handle that
           // here as a fallback.

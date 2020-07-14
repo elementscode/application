@@ -1,6 +1,6 @@
 import { RouteHandler } from './route';
 import { Router } from './router';
-import { EventHandler } from './events';
+import { EventSystem } from './events';
 import {
   IRequest,
   IRoute,
@@ -15,7 +15,7 @@ export class Application implements IRoute {
   private _description: string;
   private _meta: {[index: string]: IMetaTag};
   private _router: Router;
-  private _events: EventHandler;
+  private _events: EventSystem;
   public prefix?: string;
 
   public constructor() {
@@ -23,7 +23,7 @@ export class Application implements IRoute {
     this._meta = {};
     this._title = '';
     this._description = '';
-    this._events = new EventHandler(this);
+    this._events = new EventSystem();
   }
 
   public title(value?: string): string {
@@ -105,8 +105,8 @@ export class Application implements IRoute {
    * @param event - The name of the event to fire.
    * @param args - The arguments to pass to the event handlers.
    */
-  public fire(event: string, ...args: any[]): this {
-    this._events.fire(event, ...args);
+  public fire(event: string, args: any[], thisArg: any): this {
+    this._events.fire(event, args, thisArg);
     return this;
   }
 

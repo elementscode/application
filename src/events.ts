@@ -14,13 +14,11 @@ export class EventApi {
   }
 }
 
-export class EventHandler<T = any> {
+export class EventSystem {
   private _handlers: {[event: string]: ((...args: any[])=>any)[]};
-  private _thisArg: T;
 
-  public constructor(thisArg: T) {
+  public constructor() {
     this._handlers = {};
-    this._thisArg = thisArg;
   }
 
   public on(event: string, callback: (...args: any[]) => any) {
@@ -31,11 +29,11 @@ export class EventHandler<T = any> {
     this._handlers[event].push(callback);
   }
 
-  public fire(event: string, ...args: any[]) {
+  public fire(event: string, args: any[], thisArg: any) {
     let handlers = this._handlers[event] || [];
     let api = new EventApi();
     for (let handler of handlers) {
-      handler.apply(this._thisArg, args.concat([api]));
+      handler.apply(thisArg, args.concat([api]));
       if (api.isStopped()) {
         return;
       }
