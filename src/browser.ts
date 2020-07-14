@@ -804,6 +804,7 @@ export class Browser {
     window['bundles'] = message.bundles;
     await window['loader'].load(this.getCurrentVPath());
     await this.run(location.pathname + location.search + location.hash);
+    this.app.fire('started');
     this.app.fire('reloaded');
   }
 
