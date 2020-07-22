@@ -261,7 +261,7 @@ export class Server {
       portLabel = ':' + port;
     }
 
-    return proto + host + port;
+    return proto + host + portLabel;
   }
 
   onUncaughtError(error: Error): void {
