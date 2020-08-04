@@ -1,4 +1,5 @@
 import * as http from 'http';
+import * as https from 'https';
 import * as net from 'net';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -85,7 +86,7 @@ export class Server {
   private app: Application;
   private distJson: IDistJson;
   private heartBeatIntervalId: NodeJS.Timer;
-  private httpServer: http.Server;
+  private httpServer: http.Server|https.Server;
   private logger: Logger;
   private middleware: MiddlewareStack;
   private opts: IServerOptions;
@@ -98,15 +99,31 @@ export class Server {
       env: 'dev',
     });
 
-    this.logger = new Logger();
-    this.httpServer = this.createHttpServer();
-    this.wsServer = this.createWsServer();
+    // setup the basics
     this.middleware = new MiddlewareStack();
+    this.logger = new Logger();
+
+    // load the app and config
     this.load(this.opts.app);
+
+    // create the http and ws servers
+    this.httpServer = this.config.equals('server.ssl.on', true) ? this.createHttpsServer() : this.createHttpServer();
+    this.wsServer = this.createWsServer();
   }
 
   protected createHttpServer(): http.Server {
-    let server = http.createServer(this.getHttpServerOpts());
+    let server = http.createServer({});
+    server.on('error', this.onHttpError.bind(this));
+    server.on('request', this.onHttpRequest.bind(this));
+    server.on('upgrade', this.onHttpUpgrade.bind(this));
+    return server;
+  }
+
+  protected createHttpsServer(): https.Server {
+    let server = https.createServer({
+      key: this.config.getOrThrow('server.ssl.key'),
+      cert: this.config.getOrThrow('server.ssl.cert')
+    });
     server.on('error', this.onHttpError.bind(this));
     server.on('request', this.onHttpRequest.bind(this));
     server.on('upgrade', this.onHttpUpgrade.bind(this));
@@ -121,7 +138,7 @@ export class Server {
 
   protected getHttpListenOpts(): IHttpListenOptions {
     return {
-      port: this.config.get<number>('http.port', 3000),
+      port: this.config.get<number>('server.port', 3000),
     };
   }
 
@@ -145,10 +162,6 @@ export class Server {
     this.heartBeatIntervalId = this.startHeartBeat();
     process.on('uncaughtException', (err) => this.onUncaughtError(err));
     this.app.fire('started', [], this.app);
-  }
-
-  protected getHttpServerOpts(): http.ServerOptions {
-    return {};
   }
 
   public restart(app: Application, changed: IDistJsonFileChangeSets) {
