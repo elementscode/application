@@ -41,6 +41,7 @@ export class AssetMiddleware {
     let filePath = req.url.replace(this.assetUrl, this.assetPath).split(/[?#]/)[0];
     let target: string = 'browser';
     let distJsonFile: IDistJsonFile;
+    let distJsonSmFile: IDistJsonFile;
     let etag: string
 
     if (!this.distJson.targets[target]) {
@@ -58,6 +59,16 @@ export class AssetMiddleware {
       return;
     }
 
+    req.header('Content-Type', mime.getType(filePath));
+    req.header('Cache-Control', `max-age=${maxAssetAgeInSeconds}`);
+    req.header('ETag', distJsonFile.version);
+
+    distJsonSmFile = this.distJson.targets[target].files[filePath+'.map'];
+    if (distJsonSmFile) {
+      let sourceMapUrl = filePath.replace(this.assetPath, this.assetUrl) + '.map?version=' + distJsonSmFile.version;
+      req.header('X-SourceMap', sourceMapUrl);
+    }
+
     etag = req.header('If-None-Match') as string;
     if (etag && etag == distJsonFile.version) {
       req.status(304);
@@ -66,9 +77,6 @@ export class AssetMiddleware {
     }
 
     req.status(200);
-    req.header('Content-Type', mime.getType(filePath));
-    req.header('ETag', distJsonFile.version);
-    req.header('Cache-Control', `max-age=${maxAssetAgeInSeconds}`);
 
     if (req.method == 'HEAD') {
       req.end();

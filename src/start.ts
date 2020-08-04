@@ -1,4 +1,4 @@
-import { hot, IDistJsonFileChangeSets, Resolver } from '@elements/runtime';
+import { hot, IDistJsonFileChangeSets } from '@elements/runtime';
 import { Server } from './server';
 import { Application } from './application';
 
@@ -22,7 +22,7 @@ export function start(load: () => Application | { default: Application }) {
     env: process.env.ENV || 'dev',
   });
 
-  hot((changed: IDistJsonFileChangeSets, resolver: Resolver) => {
+  hot((changed: IDistJsonFileChangeSets) => {
     server.restart(getAppFromCallback(load), changed);
   });
 

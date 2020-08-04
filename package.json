@@ -45,6 +45,7 @@
   "scripts": {
     "clean": "rm -rf .elements/dist",
     "copyfiles": "mkdir -p .elements/dist && cp README.md LICENSE.txt package.json .elements/dist",
-    "build": "yarn run clean && yarn run copyfiles && tsc"
+    "build": "yarn run clean && yarn run copyfiles && tsc",
+    "build:watch": "yarn run clean && yarn run copyfiles && tsc --watch"
   }
 }
