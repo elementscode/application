@@ -365,35 +365,36 @@ export class Server {
       logger.log('\n%s', indent(err.stack, 2));
       logger.log('%s %s', req.url, color('(' + err.constructor.name + ' ' + timer.toString() + ')', errColor));
 
-      if (err instanceof NotAuthorizedError) {
-        try {
-          request.status(401);
-          this.app.fire('notAuthorized', [err], request);
-        } catch (err) {
-          // a runtime error happened in the event handler so we need to handle that
-          // here as a fallback.
-          request.status(500);
-          logger.log('%s', indent(err.stack, 2));
-        }
-      } else if (err instanceof NotFoundError) {
+      // log the error to the server so we know it happened
+      logger.log('%s', indent(err.stack, 2));
+
+      let errorEventName: string;
+
+      // set the correct http status code for the error and assign the
+      // corresponding event handler name
+      if (err instanceof NotFoundError) {
+        errorEventName = 'notFoundError';
         request.status(404);
-        request.write(err.message + '\n');
-      } else if (err instanceof NotAcceptableError) {
-        request.status(406);
-        request.write(err.message + '\n');
+      } else if (err instanceof NotAuthorizedError) {
+        errorEventName = 'notAuthorizedError';
+        request.status(401);
       } else {
-        try {
-          request.status(500);
-          this.app.fire('unhandledError', [err], request);
-        } catch (err) {
-          // a runtime error happened in the event handler so we need to handle that
-          // here as a fallback.
-          request.status(500);
-          logger.log('%s', indent(err.stack, 2));
-        }
+        errorEventName = 'unhandledError';
+        request.status(500);
+      }
+
+      try {
+        // let the app decide what to do with the error.
+        this.app.fire(errorEventName, [err], request);
+      } catch (err) {
+        // and if that fails at least set the 500 status code and then log the
+        // secondary error here.
+        request.status(500);
+        logger.log('%s', indent(err.stack, 2));
       }
     } finally {
       if (!res.finished) {
+        // make sure to end the request if it hasn't been ended yet.
         res.end();
       }
     }

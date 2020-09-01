@@ -1,7 +1,7 @@
 import { Browser } from './browser';
 import { Application } from './application';
 
-export const BROWSER_KEY = '_browser';
+export const BROWSER_KEY = 'browser';
 
 /**
  * Navigate to a url.

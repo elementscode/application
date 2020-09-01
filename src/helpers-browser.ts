@@ -8,3 +8,7 @@ export function call<T = any>(method: string, ...args: any[]): Promise<T> {
 export function getSession(): Session {
   return window[BROWSER_KEY].getSession();
 }
+
+export function go(url: string, options: any = {}): void {
+  return window[BROWSER_KEY].go(url, options);
+}

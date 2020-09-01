@@ -2,18 +2,6 @@ import { hot, IDistJsonFileChangeSets } from '@elements/runtime';
 import { Server } from './server';
 import { Application } from './application';
 
-/**
- * Navigate to a url.
- *
- * @param url - The url path to navigate to.
- * @param options - You can provide the replace: true option to replace the url
- * rather than push a url onto the push state stack.
- *
- */
-export function go(url: string, options: any = {}): void {
-  throw new Error(`Only use the go() function in the browser.`);
-}
-
 export function start(load: () => Application | { default: Application }) {
   let app = getAppFromCallback(load);
 

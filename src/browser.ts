@@ -382,6 +382,9 @@ export class Browser {
       }
     } catch(err) {
       try {
+        // FIXME  you need to check the type of error. if it's a not found error
+        // you should call the notFoundError event handler. otherwise call the
+        // unhandled error handler.
         this.app.fire('unhandledError', [err], req);
       } catch(err2) {
         console.error(`app.on('unhandledError', ...) threw an error itself. The original error is below. The unhandledError runtime error is: ${err2}`);
@@ -888,6 +891,7 @@ export class Browser {
     }
 
     else {
+      // FIXME: auto handle error here.
       throw message.value;
     }
   }
