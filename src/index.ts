@@ -29,5 +29,3 @@ export * from './session-middleware';
 export * from './session';
 export * from './start';
 export * from './types';
-export * from './thing';
-console.trace('eval');
