@@ -6,7 +6,7 @@ import { File } from './file';
 import { MultipartForm, parseHeaderValueFields } from './multipart-form';
 import {
   NotAcceptableError
-} from './errors';
+} from '@elements/error';
 
 let reIsNumber = /[0-9]+(\.[0-9]+)?/
 

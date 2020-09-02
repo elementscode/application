@@ -9,7 +9,7 @@ import {
   NotAuthorizedError,
   NotAcceptableError,
   NotFoundError
-} from './errors';
+} from '@elements/error';
 import { Session } from './session';
 import { debug } from './debug';
 

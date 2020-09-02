@@ -1,7 +1,7 @@
 import { get, set } from '@elements/utils';
 import {
   NotAcceptableError,
-} from './errors';
+} from '@elements/error';
 
 /**
  * Wraps an object with get and set methods for easier accessiblity of object

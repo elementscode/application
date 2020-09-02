@@ -4,7 +4,7 @@ import { debug } from './debug';
 import {
   NotAuthorizedError,
   NotFoundError,
-} from './errors';
+} from '@elements/error';
 
 export interface IAppMiddlewareOpts {
   app: Application;

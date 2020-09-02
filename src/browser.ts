@@ -19,7 +19,7 @@ import {
   NotAcceptableError,
   NotFoundError,
   NotAuthorizedError,
-} from './errors';
+} from '@elements/error';
 import {
   IMessage,
   IClientMessage,

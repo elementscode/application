@@ -2,6 +2,7 @@ export * from '@elements/json';
 export * from '@elements/runtime';
 export * from '@elements/compiler';
 export * from '@elements/postgres';
+export * from '@elements/error';
 
 export * from './app-middleware';
 export * from './application';
@@ -11,7 +12,6 @@ export * from './browser-request';
 export * from './browser';
 export * from './helpers';
 export * from './config';
-export * from './errors';
 export * from './file';
 export * from './form';
 export * from './logger';
