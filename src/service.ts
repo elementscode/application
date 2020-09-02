@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Logger } from './logger';
+import { SqlResult, DbConnection, Db } from '@elements/postgres';
 import {
   ISessionHost
 } from './types';
@@ -11,8 +12,6 @@ import {
 } from './errors';
 import { Session } from './session';
 import { debug } from './debug';
-
-export type AuthorizeCallback = (this: Service, session: Session) => boolean;
 
 export interface IServiceOpts {
   session: Session;
@@ -29,18 +28,8 @@ export class Service {
     this.logger = opts.logger;
   }
 
-  public async authorize(callback: AuthorizeCallback | boolean): Promise<void> {
-    let isAuthorized: boolean = false;
-
-    if (typeof callback === 'boolean') {
-      isAuthorized = callback;
-    } else {
-      isAuthorized = await callback.call(this, this.session);
-    }
-
-    if (!isAuthorized) {
-      throw new NotAuthorizedError();
-    }
+  public async sql<R extends any = any, A extends any[] = any[]>(text: string, args?: A): Promise<SqlResult<R>> {
+    return Db.sql<R, A>(text, args);
   }
 
   public static create(opts: IServiceOpts): Service {

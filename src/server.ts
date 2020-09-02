@@ -460,8 +460,9 @@ export class Server {
 
       logger.log('%s %s', message.method, color('(return - ' + timer.toString() + ')', successColor));
     } catch (err) {
-      this.sendErrorMessage(socket, session, err, message.id);
+      logger.log('%s', err);
       logger.log('%s %s', message.method, color('(' + err.constructor.name + ' - ' + timer.toString() + ')', errColor));
+      this.sendErrorMessage(socket, session, err, message.id);
     }
   }
 
