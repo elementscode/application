@@ -145,7 +145,7 @@ export class Server {
   protected getSessionOpts(): ISessionOptions {
     return {
       key: this.config.get<string>('session.key', 'session'),
-      password: this.config.getOrThrow<string>('session.secret'),
+      password: this.config.get<string>('session.secret', 'secret'),
       loggedInExpires: this.config.get<number|undefined>('session.loggedInExpires', undefined),
       loggedOutExpires: this.config.get<number|undefined>('session.loggedOutExpires', undefined),
     };
@@ -317,6 +317,7 @@ export class Server {
     debug('%s %s', req.method, req.url);
 
     if (req.url == '/favicon.ico') {
+      // FIXME get rid of this.
       res.statusCode = 200;
       res.end();
       return;
@@ -365,11 +366,7 @@ export class Server {
       logger.log('\n%s', indent(err.stack, 2));
       logger.log('%s %s', req.url, color('(' + err.constructor.name + ' ' + timer.toString() + ')', errColor));
 
-      // log the error to the server so we know it happened
-      logger.log('%s', indent(err.stack, 2));
-
       let errorEventName: string;
-
       // set the correct http status code for the error and assign the
       // corresponding event handler name
       if (err instanceof NotFoundError) {

@@ -177,28 +177,51 @@ export class ServerRequest implements IRequest {
     let bootBundle = this._distJson.targets['browser'].bundles['boot'];
     let appBundle = this._distJson.targets['browser'].bundles['app'];
     let pageBundle = this._distJson.targets['browser'].bundles[distJsonFile.source];
+    let visited = new Set();
 
-    let cssTags: string[];
-    cssTags = bootBundle.style.map(file => {
-      return `<link rel="stylesheet" href="${file.url}" data-loader="ignore">`
+    let cssTags: string[] = [];
+    bootBundle.style.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        cssTags.push(`<link rel="stylesheet" href="${file.url}" data-loader="ignore">`);
+      }
     });
-    cssTags = cssTags.concat(appBundle.style.map(file => {
-      return `<link rel="stylesheet" href="${file.url}">`
-    }));
-    cssTags = cssTags.concat(pageBundle.style.map(file => {
-      return `<link rel="stylesheet" href="${file.url}">`
-    }));
 
-    let scriptTags: string[];
-    scriptTags = bootBundle.code.map(file => {
-      return `<script type="text/javascript" src="${file.url}" data-loader="ignore"></script>`
-    })
-    scriptTags = scriptTags.concat(appBundle.code.map(file => {
-      return `<script type="text/javascript" src="${file.url}"></script>`
-    }));
-    scriptTags = scriptTags.concat(pageBundle.code.map(file => {
-      return `<script type="text/javascript" src="${file.url}"></script>`
-    }));
+    appBundle.style.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        cssTags.push(`<link rel="stylesheet" href="${file.url}">`);
+      }
+    });
+
+    pageBundle.style.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        cssTags.push(`<link rel="stylesheet" href="${file.url}">`);
+      }
+    });
+
+    let scriptTags: string[] = [];
+    bootBundle.code.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        scriptTags.push(`<script type="text/javascript" src="${file.url}" data-loader="ignore"></script>`);
+      }
+    });
+
+    appBundle.code.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        scriptTags.push(`<script type="text/javascript" src="${file.url}"></script>`);
+      }
+    });
+
+    pageBundle.code.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        scriptTags.push(`<script type="text/javascript" src="${file.url}"></script>`);
+      }
+    });
 
     let defaultMetaTags: IMetaTag[] = [
       { name: 'description', content: this.description() },

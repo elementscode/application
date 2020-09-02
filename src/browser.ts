@@ -14,7 +14,11 @@ import { Session } from './session';
 import { LinearBackoff } from './linear-backoff';
 import { Logger } from './logger';
 import {
-  StandardError
+  StandardError,
+  UnhandledError,
+  NotAcceptableError,
+  NotFoundError,
+  NotAuthorizedError,
 } from './errors';
 import {
   IMessage,
@@ -381,13 +385,23 @@ export class Browser {
         this.app.fire('notFoundError', [req.parsedUrl.pathname], req);
       }
     } catch(err) {
+      let errorEventName: string;
+      if (err instanceof NotFoundError) {
+        errorEventName = 'notFoundError';
+      } else if (err instanceof NotAuthorizedError) {
+        errorEventName = 'notAuthorizedError';
+      } else {
+        if (err.name == 'NotFoundError' && !(err instanceof NotFoundError)) {
+          console.log('oh crap it doesnt match the imported symbol. why?');
+        }
+
+        console.log(err);
+        errorEventName = 'unhandledError';
+      }
+
       try {
-        // FIXME  you need to check the type of error. if it's a not found error
-        // you should call the notFoundError event handler. otherwise call the
-        // unhandled error handler.
-        this.app.fire('unhandledError', [err], req);
-      } catch(err2) {
-        console.error(`app.on('unhandledError', ...) threw an error itself. The original error is below. The unhandledError runtime error is: ${err2}`);
+        this.app.fire(errorEventName, [err], req);
+      } catch (err) {
         console.error(err);
       }
     }
@@ -891,7 +905,7 @@ export class Browser {
     }
 
     else {
-      // FIXME: auto handle error here.
+      // FIXME ok so you'll have to do some auto handling here next.
       throw message.value;
     }
   }
