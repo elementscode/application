@@ -902,12 +902,26 @@ export class Browser {
     if (typeof message.id !== 'undefined') {
       let deferred = this.getAndDeleteDeferredCall(message.id);
       deferred.reject(message.value);
+    } else {
+      // note: this block only called if the message doesn't have an associated
+      // call id.
+      this.app.fire('unhandledError', [message.value], this.createBrowserRequestForCurrentUrl());
     }
+  }
 
-    else {
-      // FIXME ok so you'll have to do some auto handling here next.
-      throw message.value;
-    }
+  /**
+   * Creates a browser request for the current url. This is used for rpc error
+   * handling when we want to figure an app error event handler but are not in a
+   * route function and need to create a request.
+   */
+  protected createBrowserRequestForCurrentUrl(): BrowserRequest {
+    return new BrowserRequest({
+      app: this.app,
+      browser: this,
+      url: location.pathname + location.search + location.hash,
+      session: this.getSessionFromCookie(this.getCookie()) || this.createEmptySession(),
+      logger: this.logger,
+    });
   }
 
   /**

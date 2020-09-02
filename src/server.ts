@@ -317,7 +317,6 @@ export class Server {
     debug('%s %s', req.method, req.url);
 
     if (req.url == '/favicon.ico') {
-      // FIXME get rid of this.
       res.statusCode = 200;
       res.end();
       return;
