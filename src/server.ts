@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as WebSocket from 'ws';
 import { homedir } from 'os';
+import { Config, findOrCreateAppConfig } from '@elements/config';
 import { stringify, parse } from '@elements/json';
 import {
   walkSync,
@@ -30,7 +31,6 @@ import {
 } from './server-session';
 import { success } from './ansi';
 import { onBeforeSendHeaders } from './headers';
-import { Config } from './config';
 import {
   StandardError,
   UnhandledError,
@@ -176,7 +176,7 @@ export class Server {
 
   protected load(app: Application) {
     debug('load');
-    this.config = this.getProjectConfig();
+    this.config = findOrCreateAppConfig();
     this.app = app;
     this.loadHtmlTemplate();
     this.readDistJson();
@@ -573,21 +573,6 @@ export class Server {
     } catch(err) {
       // if it doesn't exist then use the default
       this.htmlTemplate = defaultHtmlTemplate;
-    }
-  }
-
-  getProjectConfig(): Config {
-    try {
-      let exports = require(path.join(process.cwd(), 'app', 'config'));
-      if (exports instanceof Config) {
-        return exports;
-      } else if (exports.default instanceof Config) {
-        return exports.default;
-      } else {
-        return new Config();
-      }
-    } catch(err) {
-      return new Config();
     }
   }
 }

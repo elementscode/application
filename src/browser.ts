@@ -20,6 +20,7 @@ import {
   NotFoundError,
   NotAuthorizedError,
 } from '@elements/error';
+import '@elements/error';
 import {
   IMessage,
   IClientMessage,
