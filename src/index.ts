@@ -16,7 +16,6 @@ export * from './form';
 export * from './helpers';
 export * from './logger';
 export * from './middleware-stack';
-export * from './migration';
 export * from './multipart-form';
 export * from './params-object';
 export * from './parser';
