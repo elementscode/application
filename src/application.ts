@@ -91,6 +91,18 @@ export class Application implements IRoute {
   }
 
   /**
+   * Add a route to the app.
+   *
+   * @param method - The http method (e.g. get, put, post).
+   * @param path - The url path.
+   * @param handler - The route handler function.
+   */
+  public route(method: string, path: string, handler: RouteHandler): this {
+    this._router.route(method, path, handler);
+    return this;
+  }
+
+  /**
    * Listen to an event.
    * @param event - The name of the event to listen to (e.g. 'start').
    * @param callback - The function to call when the event is fired.
