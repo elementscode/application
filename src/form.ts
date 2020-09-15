@@ -1,7 +1,7 @@
 import { get, set, push } from '@elements/utils';
 import { File } from './file';
 
-export async function getFormData(form: HTMLFormElement): Promise<any> {
+export async function getFormData<T = any>(form: HTMLFormElement): Promise<T> {
   let result = {};
   let controls = form.elements as HTMLFormControlsCollection;
   for (let idx = 0; idx < controls.length; idx++) {
@@ -32,7 +32,7 @@ export async function getFormData(form: HTMLFormElement): Promise<any> {
         break;
     }
   }
-  return result;
+  return result as T;
 }
 
 function setFromSelect(result: any, el: HTMLSelectElement) {
