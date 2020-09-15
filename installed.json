@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "time": "2020-09-02T11:13:26-07:00",
+  "time": "2020-09-15T14:11:04-07:00",
   "project": {
     "@elements/compiler": {
       "spec": "0.0.0",
@@ -39,7 +39,7 @@
     },
     "@types/node": {
       "spec": ">=14.0.9 <15.0.0",
-      "version": "14.6.3",
+      "version": "14.10.2",
       "kind": "devDependencies"
     },
     "@types/react": {
@@ -101,18 +101,39 @@
   "packages": {
     "@elements/compiler": {
       "0.0.0": {
+        "@elements/css": {
+          "spec": "0.0.0",
+          "version": "0.0.0",
+          "kind": "dependencies"
+        },
         "typescript": {
           "spec": "3.9.7",
           "version": "3.9.7",
-          "kind": "3.9.7"
+          "kind": "dependencies"
         }
       }
     },
     "@elements/config": {
       "0.0.0": {
         "@elements/utils": {
-          "spec": "0.0.0",
-          "version": "0.0.0",
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        }
+      },
+      "1.0.0-alpha.54": {
+        "@elements/utils": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        }
+      }
+    },
+    "@elements/css": {
+      "0.0.0": {
+        "@elements/parse": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
           "kind": "dependencies"
         }
       }
@@ -120,43 +141,115 @@
     "@elements/error": {
       "0.0.0": {
         "@elements/json": {
-          "spec": "0.0.0",
-          "version": "0.0.0",
-          "kind": "0.0.0"
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        }
+      },
+      "1.0.0-alpha.54": {
+        "@elements/json": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        }
+      }
+    },
+    "@elements/job": {
+      "1.0.0-alpha.54": {
+        "@elements/term": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        },
+        "@elements/utils": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
         }
       }
     },
     "@elements/json": {
       "0.0.0": {
         "@elements/utils": {
-          "spec": "0.0.0",
-          "version": "0.0.0",
-          "kind": "0.0.0"
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        }
+      },
+      "1.0.0-alpha.54": {
+        "@elements/utils": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        }
+      }
+    },
+    "@elements/parse": {
+      "1.0.0-alpha.54": {
+        "@types/node": {
+          "spec": "latest",
+          "version": "14.10.2",
+          "kind": "dependencies"
+        },
+        "source-map": {
+          "spec": "latest",
+          "version": "0.7.3",
+          "kind": "dependencies"
         }
       }
     },
     "@elements/postgres": {
       "0.0.0": {
+        "@elements/config": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        },
+        "@elements/error": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        },
+        "@elements/job": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        },
         "@elements/json": {
-          "spec": "0.0.0",
-          "version": "0.0.0",
-          "kind": "0.0.0"
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        },
+        "@elements/term": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
         },
         "pg": {
           "spec": ">=8.3.0 <8.4.0",
           "version": "8.3.3",
-          "kind": "8.3.3"
+          "kind": "dependencies"
         }
       }
     },
     "@elements/runtime": {
       "0.0.0": {}
     },
+    "@elements/term": {
+      "1.0.0-alpha.54": {
+        "@elements/utils": {
+          "spec": "1.0.0-alpha.54",
+          "version": "1.0.0-alpha.54",
+          "kind": "dependencies"
+        }
+      }
+    },
     "@elements/utils": {
-      "0.0.0": {}
+      "0.0.0": {},
+      "1.0.0-alpha.54": {}
     },
     "@types/node": {
-      "14.6.3": {}
+      "14.10.2": {}
     },
     "@types/prop-types": {
       "15.7.3": {}
@@ -166,12 +259,12 @@
         "@types/prop-types": {
           "spec": ">=0.0.0",
           "version": "15.7.3",
-          "kind": "15.7.3"
+          "kind": "dependencies"
         },
         "csstype": {
           "spec": ">=3.0.2 <4.0.0",
           "version": "3.0.3",
-          "kind": "3.0.3"
+          "kind": "dependencies"
         }
       }
     },
@@ -180,7 +273,7 @@
         "@types/react": {
           "spec": ">=0.0.0",
           "version": "16.9.49",
-          "kind": "16.9.49"
+          "kind": "dependencies"
         }
       }
     },
@@ -198,7 +291,7 @@
         "ms": {
           "spec": ">=2.1.1 <3.0.0",
           "version": "2.1.2",
-          "kind": "2.1.2"
+          "kind": "dependencies"
         }
       }
     },
@@ -210,7 +303,7 @@
         "js-tokens": {
           "spec": ">=3.0.0 <4.0.0 || >=4.0.0 <5.0.0",
           "version": "4.0.0",
-          "kind": "4.0.0"
+          "kind": "dependencies"
         }
       }
     },
@@ -234,42 +327,42 @@
         "buffer-writer": {
           "spec": "2.0.0",
           "version": "2.0.0",
-          "kind": "2.0.0"
+          "kind": "dependencies"
         },
         "packet-reader": {
           "spec": "1.0.0",
           "version": "1.0.0",
-          "kind": "1.0.0"
+          "kind": "dependencies"
         },
         "pg-connection-string": {
           "spec": ">=2.3.0 <3.0.0",
           "version": "2.3.0",
-          "kind": "2.3.0"
+          "kind": "dependencies"
         },
         "pg-pool": {
           "spec": ">=3.2.1 <4.0.0",
           "version": "3.2.1",
-          "kind": "3.2.1"
+          "kind": "dependencies"
         },
         "pg-protocol": {
           "spec": ">=1.2.5 <2.0.0",
           "version": "1.2.5",
-          "kind": "1.2.5"
+          "kind": "dependencies"
         },
         "pg-types": {
           "spec": ">=2.1.0 <3.0.0",
           "version": "2.2.0",
-          "kind": "2.2.0"
+          "kind": "dependencies"
         },
         "pgpass": {
           "spec": ">=1.0.0 <2.0.0",
           "version": "1.0.2",
-          "kind": "1.0.2"
+          "kind": "dependencies"
         },
         "semver": {
           "spec": "4.3.2",
           "version": "4.3.2",
-          "kind": "4.3.2"
+          "kind": "dependencies"
         }
       }
     },
@@ -290,27 +383,27 @@
         "pg-int8": {
           "spec": "1.0.1",
           "version": "1.0.1",
-          "kind": "1.0.1"
+          "kind": "dependencies"
         },
         "postgres-array": {
           "spec": ">=2.0.0 <2.1.0",
           "version": "2.0.0",
-          "kind": "2.0.0"
+          "kind": "dependencies"
         },
         "postgres-bytea": {
           "spec": ">=1.0.0 <1.1.0",
           "version": "1.0.0",
-          "kind": "1.0.0"
+          "kind": "dependencies"
         },
         "postgres-date": {
           "spec": ">=1.0.4 <1.1.0",
           "version": "1.0.7",
-          "kind": "1.0.7"
+          "kind": "dependencies"
         },
         "postgres-interval": {
           "spec": ">=1.1.0 <2.0.0",
           "version": "1.2.0",
-          "kind": "1.2.0"
+          "kind": "dependencies"
         }
       }
     },
@@ -319,7 +412,7 @@
         "split": {
           "spec": ">=1.0.0 <2.0.0",
           "version": "1.0.1",
-          "kind": "1.0.1"
+          "kind": "dependencies"
         }
       }
     },
@@ -337,7 +430,7 @@
         "xtend": {
           "spec": ">=4.0.0 <5.0.0",
           "version": "4.0.2",
-          "kind": "4.0.2"
+          "kind": "dependencies"
         }
       }
     },
@@ -346,17 +439,17 @@
         "loose-envify": {
           "spec": ">=1.4.0 <2.0.0",
           "version": "1.4.0",
-          "kind": "1.4.0"
+          "kind": "dependencies"
         },
         "object-assign": {
           "spec": ">=4.1.1 <5.0.0",
           "version": "4.1.1",
-          "kind": "4.1.1"
+          "kind": "dependencies"
         },
         "react-is": {
           "spec": ">=16.8.1 <17.0.0",
           "version": "16.13.1",
-          "kind": "16.13.1"
+          "kind": "dependencies"
         }
       }
     },
@@ -368,17 +461,17 @@
         "loose-envify": {
           "spec": ">=1.1.0 <2.0.0",
           "version": "1.4.0",
-          "kind": "1.4.0"
+          "kind": "dependencies"
         },
         "object-assign": {
           "spec": ">=4.1.1 <5.0.0",
           "version": "4.1.1",
-          "kind": "4.1.1"
+          "kind": "dependencies"
         },
         "prop-types": {
           "spec": ">=15.6.2 <16.0.0",
           "version": "15.7.2",
-          "kind": "15.7.2"
+          "kind": "dependencies"
         }
       }
     },
@@ -387,22 +480,22 @@
         "loose-envify": {
           "spec": ">=1.1.0 <2.0.0",
           "version": "1.4.0",
-          "kind": "1.4.0"
+          "kind": "dependencies"
         },
         "object-assign": {
           "spec": ">=4.1.1 <5.0.0",
           "version": "4.1.1",
-          "kind": "4.1.1"
+          "kind": "dependencies"
         },
         "prop-types": {
           "spec": ">=15.6.2 <16.0.0",
           "version": "15.7.2",
-          "kind": "15.7.2"
+          "kind": "dependencies"
         },
         "scheduler": {
           "spec": ">=0.19.1 <0.20.0",
           "version": "0.19.1",
-          "kind": "0.19.1"
+          "kind": "dependencies"
         }
       }
     },
@@ -417,24 +510,27 @@
         "loose-envify": {
           "spec": ">=1.1.0 <2.0.0",
           "version": "1.4.0",
-          "kind": "1.4.0"
+          "kind": "dependencies"
         },
         "object-assign": {
           "spec": ">=4.1.1 <5.0.0",
           "version": "4.1.1",
-          "kind": "4.1.1"
+          "kind": "dependencies"
         }
       }
     },
     "semver": {
       "4.3.2": {}
     },
+    "source-map": {
+      "0.7.3": {}
+    },
     "split": {
       "1.0.1": {
         "through": {
           "spec": ">=2.0.0 <3.0.0",
           "version": "2.3.8",
-          "kind": "2.3.8"
+          "kind": "dependencies"
         }
       }
     },
@@ -449,12 +545,12 @@
         "querystringify": {
           "spec": ">=2.1.1 <3.0.0",
           "version": "2.2.0",
-          "kind": "2.2.0"
+          "kind": "dependencies"
         },
         "requires-port": {
           "spec": ">=1.0.0 <2.0.0",
           "version": "1.0.0",
-          "kind": "1.0.0"
+          "kind": "dependencies"
         }
       }
     },

@@ -15,11 +15,16 @@ export interface IAssetMiddlewareOpts {
 // 6 months asset expiry
 const maxAssetAgeInSeconds = 24 * 60 * 60 * 30 * 6
 
+export interface IUrlAssetInfo {
+  target: string;
+  url: string;
+  path: string;
+}
+
 export class AssetMiddleware {
   distJson: IDistJson;
-  assetUrl: string;
-  assetPath: string;
-  reTargetMatcher: RegExp;
+  reUrlPrefix: RegExp;
+  urlAssetInfo: Map<string, IUrlAssetInfo>;
 
   constructor(opts: IAssetMiddlewareOpts) {
     this.distJson = opts.distJson;
@@ -28,18 +33,31 @@ export class AssetMiddleware {
       throw new Error(`AssetMiddleware requires the 'distJson' option but got '${typeof this.distJson}' instead.`);
     }
 
-    this.assetUrl = this.distJson.assetUrl || '/assets';
-    this.assetPath = this.distJson.assetPath || 'assets';
-    this.reTargetMatcher = new RegExp(`^${this.assetUrl}\/(\\w+)`);
+    this.urlAssetInfo = new Map();
+
+    let urlPrefixes: string[] = [];
+    for (let [targetName, target] of Object.entries(this.distJson.targets)) {
+      if (target.url) {
+        urlPrefixes.push(target.url);
+        this.urlAssetInfo.set(target.url, {
+          target: targetName,
+          url: target.url,
+          path: target.path,
+        });
+      }
+    }
+
+    this.reUrlPrefix = new RegExp(`^(${urlPrefixes.join('|')})\/(\\w+)`);
   }
 
   async run(req: ServerRequest, next: () => Promise<void>): Promise<void> {
-    if (!this.isAssetRequest(req)) {
+    let info: IUrlAssetInfo = this.getUrlAssetInfo(req);
+    if (!info) {
       return next();
     }
 
-    let filePath = req.url.replace(this.assetUrl, this.assetPath).split(/[?#]/)[0];
-    let target: string = 'browser';
+    let filePath = req.url.replace(info.url, info.path).split(/[?#]/)[0];
+    let target: string = info.target;
     let distJsonFile: IDistJsonFile;
     let distJsonSmFile: IDistJsonFile;
     let etag: string
@@ -65,7 +83,7 @@ export class AssetMiddleware {
 
     distJsonSmFile = this.distJson.targets[target].files[filePath+'.map'];
     if (distJsonSmFile) {
-      let sourceMapUrl = filePath.replace(this.assetPath, this.assetUrl) + '.map?version=' + distJsonSmFile.version;
+      let sourceMapUrl = filePath.replace(info.path, info.url) + '.map?version=' + distJsonSmFile.version;
       req.header('X-SourceMap', sourceMapUrl);
     }
 
@@ -115,7 +133,23 @@ export class AssetMiddleware {
     return false;
   }
 
-  isAssetRequest(req: ServerRequest): boolean {
-    return (req.method == 'GET' || req.method == 'HEAD') && req.url.startsWith(this.assetUrl);
+  getUrlAssetInfo(req: ServerRequest): IUrlAssetInfo | undefined {
+    if (req.method != 'GET' && req.method != 'HEAD') {
+      return undefined;
+    }
+
+    let match = req.url.match(this.reUrlPrefix);
+
+    if (!match) {
+      return undefined;
+    }
+
+    let urlPrefix = match[1];
+    if (urlPrefix) {
+      let info = this.urlAssetInfo.get(urlPrefix);
+      return info;
+    } else {
+      return undefined;
+    }
   }
 }
