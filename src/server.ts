@@ -345,6 +345,8 @@ export class Server {
       htmlTemplate: this.htmlTemplate,
     });
 
+    request.header('X-Powered-By', 'elements');
+
     try {
       await this.middleware.run(request);
       timer.stop();
