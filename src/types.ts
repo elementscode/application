@@ -49,7 +49,7 @@ export interface IRequest {
   render<T = any>(importPath: string, data?: T): Promise<void>;
   status(value?: number): number;
   header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue;
-  write(content: any): boolean;
+  write(content: any, encoding?: BufferEncoding): boolean;
   json(value: any): boolean;
   end(): void;
   log(msg: string, ...args: any[]): void;

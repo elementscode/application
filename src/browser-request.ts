@@ -169,7 +169,7 @@ export class BrowserRequest implements IRequest {
     return undefined;
   }
 
-  public write(content: string): boolean {
+  public write(content: string, encoding?: BufferEncoding): boolean {
     console.log(content);
     return true;
   }

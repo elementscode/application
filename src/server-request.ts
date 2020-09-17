@@ -288,8 +288,8 @@ export class ServerRequest implements IRequest {
     return '';
   }
 
-  public write(content: string | Buffer): boolean {
-    return this.res.write(content);
+  public write(content: string | Buffer, encoding?: BufferEncoding): boolean {
+    return this.res.write(content, encoding);
   }
 
   public json(value: any): boolean {
