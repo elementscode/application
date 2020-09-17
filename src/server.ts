@@ -64,9 +64,9 @@ const defaultHtmlTemplate = `
 <!doctype html>
 <html>
   <head>
-    {{title}}
     <meta charset="utf-8">
     {{meta}}
+    {{title}}
     {{style}}
     {{code}}
   </head>
