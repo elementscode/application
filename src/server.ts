@@ -329,12 +329,6 @@ export class Server {
     let logger = this.createLoggerForSession(session);
     logger.tag('http', httpColor);
 
-    if (req.method !== 'GET') {
-      logger.log('%s %s', req.url, color(req.method.toLowerCase(), methodColor));
-    } else {
-      logger.log('%s', req.url);
-    }
-
     let request = new ServerRequest({
       app: this.app,
       distJson: this.distJson,
