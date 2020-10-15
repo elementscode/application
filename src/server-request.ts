@@ -180,46 +180,46 @@ export class ServerRequest implements IRequest {
     let visited = new Set();
 
     let cssTags: string[] = [];
-    bootBundle.style.forEach(file => {
-      if (!visited.has(file.url)) {
-        visited.add(file.url);
-        cssTags.push(`<link rel="stylesheet" href="${file.url}" data-loader="ignore">`);
+    bootBundle.style.forEach(url => {
+      if (!visited.has(url)) {
+        visited.add(url);
+        cssTags.push(`<link rel="stylesheet" href="${url}" data-loader="ignore">`);
       }
     });
 
-    appBundle.style.forEach(file => {
-      if (!visited.has(file.url)) {
-        visited.add(file.url);
-        cssTags.push(`<link rel="stylesheet" href="${file.url}">`);
+    appBundle.style.forEach(url => {
+      if (!visited.has(url)) {
+        visited.add(url);
+        cssTags.push(`<link rel="stylesheet" href="${url}">`);
       }
     });
 
-    pageBundle.style.forEach(file => {
-      if (!visited.has(file.url)) {
-        visited.add(file.url);
-        cssTags.push(`<link rel="stylesheet" href="${file.url}">`);
+    pageBundle.style.forEach(url => {
+      if (!visited.has(url)) {
+        visited.add(url);
+        cssTags.push(`<link rel="stylesheet" href="${url}">`);
       }
     });
 
     let scriptTags: string[] = [];
-    bootBundle.code.forEach(file => {
-      if (!visited.has(file.url)) {
-        visited.add(file.url);
-        scriptTags.push(`<script type="text/javascript" src="${file.url}" data-loader="ignore"></script>`);
+    bootBundle.code.forEach(url => {
+      if (!visited.has(url)) {
+        visited.add(url);
+        scriptTags.push(`<script type="text/javascript" src="${url}" data-loader="ignore"></script>`);
       }
     });
 
-    appBundle.code.forEach(file => {
-      if (!visited.has(file.url)) {
-        visited.add(file.url);
-        scriptTags.push(`<script type="text/javascript" src="${file.url}"></script>`);
+    appBundle.code.forEach(url => {
+      if (!visited.has(url)) {
+        visited.add(url);
+        scriptTags.push(`<script type="text/javascript" src="${url}"></script>`);
       }
     });
 
-    pageBundle.code.forEach(file => {
-      if (!visited.has(file.url)) {
-        visited.add(file.url);
-        scriptTags.push(`<script type="text/javascript" src="${file.url}"></script>`);
+    pageBundle.code.forEach(url => {
+      if (!visited.has(url)) {
+        visited.add(url);
+        scriptTags.push(`<script type="text/javascript" src="${url}"></script>`);
       }
     });
 
