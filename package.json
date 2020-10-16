@@ -29,11 +29,13 @@
     "debug": "4.1.1",
     "mime": "2.4.6",
     "path-to-regexp": "6.1.0",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
     "url-parse": "1.4.7",
     "uuid": "8.1.0",
     "ws": "7.3.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.13.0 <17.0.0",
+    "react-dom": ">=16.13.0 <17.0.0"
   },
   "devDependencies": {
     "@types/node": ">=14.0.9 <15.0.0",

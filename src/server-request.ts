@@ -158,6 +158,19 @@ export class ServerRequest implements IRequest {
     let bootBundle: IDistJsonBundle = this._distJson.targets['browser'].bundles['boot'];
     let appBundle: IDistJsonBundle = this._distJson.targets['browser'].bundles['app'];
     let pageBundle: IDistJsonBundle = this._distJson.targets['browser'].bundles[importPath];
+
+    if (!bootBundle) {
+      throw new Error(`boot bundle not found in dist.json`);
+    }
+
+    if (!appBundle) {
+      throw new Error(`app bundle not found in dist.json`);
+    }
+
+    if (!pageBundle) {
+      throw new Error(`${importPath} bundle not found in dist.json`);
+    }
+
     let hasher = crypto.createHash('sha512');
     hasher.write(bootBundle.version);
     hasher.write(appBundle.version);
