@@ -61,6 +61,14 @@ export class BrowserRequest implements IRequest {
     this._description = '';
   }
 
+  public getLogger(): Logger {
+    return this._logger;
+  }
+
+  public getSession(): Session {
+    return this._browser.getSession()
+  }
+
   public title(value?: string): string {
     if (arguments.length == 1) {
       this._title = value;

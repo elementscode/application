@@ -1,13 +1,20 @@
 import { Session } from './session';
+import { findAndCallServiceFunction } from './service';
+import { IServiceHost } from './types';
 
-export function call<T = any>(method: string, ...args: any[]): Promise<T> {
-  throw new Error(`call(...) is only allowed in the browser. Try this.call(...) from your route function instead.`);
+export function call<T = any>(host: IServiceHost, method: string, ...args: any[]): Promise<T> {
+  return findAndCallServiceFunction<T>({
+    method: method,
+    args: args,
+    session: host && typeof host['getSession'] == 'function' ? host.getSession() : undefined,
+    logger: host && typeof host['getLogger'] == 'function' ? host.getLogger() : undefined,
+  })
 }
 
 export function getSession(): Session {
-  throw new Error(`getSession(...) is only allowed in the browser. Try this.session from your route or service function instead.`);
+  return undefined;
 }
 
 export function go(url: string, options: any = {}): void {
-  throw new Error(`go(...) is only allowed in the browser. Try this.go from your route function instead.`);
+  // noop on the server.
 }

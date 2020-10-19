@@ -4,6 +4,7 @@ import { ParamsObject } from './params-object';
 import { IDistJsonBundle } from '@elements/runtime';
 import { Session } from './session';
 import { ServerRequest } from './server-request';
+import { Logger } from './logger';
 
 export type MiddlewareFunc = (req: http.IncomingMessage, res: http.ServerResponse, next: () => Promise<void>) => Promise<void>;
 
@@ -31,7 +32,7 @@ export interface IRoute {
 
 export type ErrorCallback = (req: IRequest, err: Error) => any;
 
-export interface IRequest {
+export interface IRequest extends IServiceHost {
   req?: http.IncomingMessage;
   res?: http.ServerResponse;
   session: Session;
@@ -45,7 +46,6 @@ export interface IRequest {
   hash: string;
   method: string;
   go(url: string, opts?: any);
-  call<T = any>(method: string, ...args: any[]): Promise<T>;
   render<T = any>(importPath: string, data?: T): Promise<void>;
   status(value?: number): number;
   header(key: string | IHeaderMap, value?: HeaderValue): HeaderValue;
@@ -118,4 +118,9 @@ export interface IHttpListenOptions {
   readableAll?: boolean;
   writableAll?: boolean;
   ipv6Only?: boolean;
+}
+  
+export interface IServiceHost {
+  getSession?: () => Session;
+  getLogger?: () => Logger;
 }

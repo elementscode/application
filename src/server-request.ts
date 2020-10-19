@@ -80,13 +80,12 @@ export class ServerRequest implements IRequest {
     this._description = '';
   }
 
-  public async call<T = any>(method: string, ...args: any[]): Promise<T> {
-    return findAndCallServiceFunction({
-      session: this.session,
-      logger: this.logger,
-      method: method,
-      args: args
-    });
+  public getSession(): Session {
+    return this.session;
+  }
+
+  public getLogger(): Logger {
+    return this.logger;
   }
 
   public title(value?: string): string {

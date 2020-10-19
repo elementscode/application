@@ -77,8 +77,8 @@ export async function findAndCallServiceFunction<T = any>(opts: ICallOptions): P
   }
 
   let service = new Service({
-    session: opts.session,
-    logger: opts.logger,
+    session: opts.session || new Session(),
+    logger: opts.logger || new Logger(),
   });
 
   return exports[funcName].apply(service, opts.args);
