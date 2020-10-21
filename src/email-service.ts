@@ -80,7 +80,11 @@ class EmailService {
       html: html,
     });
 
-    this.logger.log('\n' + 'Email sent:\n' + indent(`id: ${info.messageId}`, 2) + '\n' + indent(email.toString(), 2));
+    if (config.equals('email.live', false)) {
+      this.logger.log('\n' + 'Email (local):\n' + indent(`id: ${info.messageId}`, 2) + '\n' + indent(email.toString(), 2));
+    } else {
+      this.logger.log('\n' + 'Email (live):\n' + indent(`id: ${info.messageId}`, 2) + '\n' + indent(email.toString(), 2));
+    }
   }
 
   protected validate(email: Email) {
