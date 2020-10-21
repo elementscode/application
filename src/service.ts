@@ -42,8 +42,7 @@ export class Service implements IServiceHost {
 }
 
 export interface ICallOptions {
-  session: Session;
-  logger: Logger;
+  service: Service;
   method: string;
   args: any[];
 }
@@ -80,10 +79,5 @@ export async function findAndCallServiceFunction<T = any>(opts: ICallOptions): P
     throw new NotFoundError(`The service function ${opts.method} was not found.`);
   }
 
-  let service = new Service({
-    session: opts.session || new Session(),
-    logger: opts.logger || new Logger(),
-  });
-
-  return exports[funcName].apply(service, opts.args);
+  return exports[funcName].apply(opts.service, opts.args);
 }

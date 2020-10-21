@@ -17,7 +17,7 @@ import { IDistJson, IDistJsonFileChangeSets } from '@elements/runtime';
 import { color } from './ansi';
 import { Logger } from './logger';
 import { ServerRequest } from './server-request';
-import { findAndCallServiceFunction } from './service';
+import { findAndCallServiceFunction, Service } from './service';
 import { Application } from './application';
 import { AssetMiddleware } from './asset-middleware';
 import { BodyMiddleware } from './body-middleware';
@@ -446,8 +446,7 @@ export class Server {
       logger.log('%s', message.method);
 
       let retval = await findAndCallServiceFunction({
-        session: session,
-        logger: logger,
+        service: new Service({session, logger}),
         method: message.method,
         args: message.args
       });
