@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { Logger } from './logger';
-import { SqlResult, DbConnection, Db } from '@elements/postgres';
 import {
-  ISessionHost
+  ISessionHost,
+  IServiceHost,
 } from './types';
 
 import {
@@ -18,7 +18,7 @@ export interface IServiceOpts {
   logger: Logger;
 }
 
-export class Service {
+export class Service implements IServiceHost {
   public session: Session;
 
   public logger: Logger;
@@ -28,8 +28,12 @@ export class Service {
     this.logger = opts.logger;
   }
 
-  public async sql<R extends any = any, A extends any[] = any[]>(text: string, args?: A): Promise<SqlResult<R>> {
-    return Db.sql<R, A>(text, args);
+  public getSession(): Session {
+    return this.session;
+  }
+
+  public getLogger(): Logger {
+    return this.logger;
   }
 
   public static create(opts: IServiceOpts): Service {
