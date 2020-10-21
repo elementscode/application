@@ -139,26 +139,25 @@ export class BrowserRequest implements IRequest {
   /**
    * Renders a view to the page.
    *
-   * @param vpath - The virtual path (e.g. project://app/pages/home/index.tsx)
-   * to the page and its bundle.
+   * @param bundleKey - The bundle key.
    * @param [attrs] - Initial data attributes for the view.
    */
-  public async render<T = any>(vpath: string, attrs?: T): Promise<void> {
-    debug('render %s', vpath);
+  public async render<T = any>(bundleKey: string, attrs?: T): Promise<void> {
+    debug('render %s', bundleKey);
 
     try {
-      await window['loader'].load(vpath, async (): Promise<void> => {
+      await window['loader'].load(bundleKey, async (): Promise<void> => {
         this.setTitle();
         this.setMeta();
-        let prevVPath = this._browser.getCurrentVPath();
-        this._browser.setCurrentVPath(vpath);
+        let prevBundleKey = this._browser.getCurrentBundleKey();
+        this._browser.setCurrentBundleKey(bundleKey);
 
-        let view = require(vpath).default;
+        let view = require(bundleKey).default;
         if (!view) {
-          throw new Error(`Unable to render view because a default view class was not exported from the file ${vpath}.`);
+          throw new Error(`Unable to render view because a default view class was not exported from the file ${bundleKey}.`);
         }
 
-        if (vpath != prevVPath) {
+        if (bundleKey != prevBundleKey) {
           ReactDOM.unmountComponentAtNode(document.body.children[0]);
         }
         let el = React.createElement(view, attrs);

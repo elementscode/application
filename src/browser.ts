@@ -87,9 +87,9 @@ export class Browser {
   protected started: boolean;
 
   /**
-   * The current page's virtual path (e.g. project/app/views/home/index.tsx).
+   * The current page's bundle key (e.g. app/views/home/index.tsx).
    */
-  protected vpath: string;
+  protected currentBundleKey: string;
 
   /**
    * The web socket.
@@ -282,7 +282,7 @@ export class Browser {
    * Hydrates a server rendered page.
    */
   protected hydrate() {
-    let viewMetaEl = <HTMLMetaElement>document.querySelector('meta[name="elements:view"]');
+    let viewMetaEl = <HTMLMetaElement>document.querySelector('meta[name="elements:bundle"]');
     let dataMetaEl = <HTMLMetaElement>document.querySelector('meta[name="elements:data"]');
 
     if (!viewMetaEl) {
@@ -301,12 +301,12 @@ export class Browser {
       attrs = {};
     }
 
-    let vpath = viewMetaEl.content;
-    let exports = require(vpath);
+    let key = viewMetaEl.content;
+    let exports = require(key);
     let view = exports.default;
     let el = React.createElement(view, attrs);
-    debug('hydrate %s', vpath);
-    this.setCurrentVPath(vpath);
+    debug('hydrate %s', key);
+    this.setCurrentBundleKey(key);
     ReactDOM.hydrate(el, document.body.children[0]);
   }
 
@@ -451,18 +451,18 @@ export class Browser {
   }
 
   /**
-   * Sets the current page's vpath.
+   * Sets the current page's bundle key.
    */
-  public setCurrentVPath(vpath: string): this {
-    this.vpath = vpath;
+  public setCurrentBundleKey(key: string): this {
+    this.currentBundleKey = key;
     return this;
   }
 
   /**
    * Gets the current vpath.
    */
-  public getCurrentVPath(): string | undefined {
-    return this.vpath;
+  public getCurrentBundleKey(): string | undefined {
+    return this.currentBundleKey;
   }
 
   /**
@@ -820,7 +820,7 @@ export class Browser {
   protected async onRestartMessage(message: IRestartMessage): Promise<void> {
     debug('reload');
     window['bundles'] = message.bundles;
-    await window['loader'].load(this.getCurrentVPath());
+    await window['loader'].load(this.getCurrentBundleKey());
     await this.run(location.pathname + location.search + location.hash);
     this.app.fire('started', [], this.app);
     this.app.fire('reloaded', [], this.app);

@@ -4,7 +4,7 @@ import * as crypto from 'crypto';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import * as ParsedUrl from 'url-parse';
-import { IDistJson, IDistJsonBundle } from '@elements/runtime';
+import { IDistJson, IDistJsonBundle, IDistJsonBundleFile } from '@elements/runtime';
 import { stringify } from '@elements/json';
 import {
   indent,
@@ -179,10 +179,10 @@ export class ServerRequest implements IRequest {
     return hasher.digest('hex').slice(0, 10);
   }
 
-  protected getHtml<T = any>(vpath: string, data: T = {} as any): string {
-    let distRelPath: string = this._distJson.targets['main'].sources[vpath];
+  protected getHtml<T = any>(key: string, data: T = {} as any): string {
+    let distRelPath: string = this._distJson.targets['main'].sources[key];
     if (!distRelPath) {
-      throw new Error(`${vpath} not found in dist.json`);
+      throw new Error(`${key} not found in dist.json`);
     }
 
     let distJsonFile = this._distJson.targets['main'].files[distRelPath];
@@ -192,52 +192,52 @@ export class ServerRequest implements IRequest {
     let visited = new Set();
 
     let cssTags: string[] = [];
-    bootBundle.style.forEach(url => {
-      if (!visited.has(url)) {
-        visited.add(url);
-        cssTags.push(`<link rel="stylesheet" href="${url}" data-loader="ignore">`);
+    bootBundle.style.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        cssTags.push(`<link rel="stylesheet" href="${file.url}" data-loader="ignore">`);
       }
     });
 
-    appBundle.style.forEach(url => {
-      if (!visited.has(url)) {
-        visited.add(url);
-        cssTags.push(`<link rel="stylesheet" href="${url}">`);
+    appBundle.style.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        cssTags.push(`<link rel="stylesheet" href="${file.url}">`);
       }
     });
 
-    pageBundle.style.forEach(url => {
-      if (!visited.has(url)) {
-        visited.add(url);
-        cssTags.push(`<link rel="stylesheet" href="${url}">`);
+    pageBundle.style.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        cssTags.push(`<link rel="stylesheet" href="${file.url}">`);
       }
     });
 
     let scriptTags: string[] = [];
-    bootBundle.code.forEach(url => {
-      if (!visited.has(url)) {
-        visited.add(url);
-        scriptTags.push(`<script type="text/javascript" src="${url}" data-loader="ignore"></script>`);
+    bootBundle.code.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        scriptTags.push(`<script type="text/javascript" src="${file.url}" data-loader="ignore"></script>`);
       }
     });
 
-    appBundle.code.forEach(url => {
-      if (!visited.has(url)) {
-        visited.add(url);
-        scriptTags.push(`<script type="text/javascript" src="${url}"></script>`);
+    appBundle.code.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        scriptTags.push(`<script type="text/javascript" src="${file.url}"></script>`);
       }
     });
 
-    pageBundle.code.forEach(url => {
-      if (!visited.has(url)) {
-        visited.add(url);
-        scriptTags.push(`<script type="text/javascript" src="${url}"></script>`);
+    pageBundle.code.forEach(file => {
+      if (!visited.has(file.url)) {
+        visited.add(file.url);
+        scriptTags.push(`<script type="text/javascript" src="${file.url}"></script>`);
       }
     });
 
     let defaultMetaTags: IMetaTag[] = [
       { name: 'description', content: this.description() },
-      { name: 'elements:view', content: vpath },
+      { name: 'elements:bundle', content: key },
       { name: 'elements:data', content: Buffer.from(stringify(data)).toString('base64') }
     ];
 

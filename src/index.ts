@@ -11,6 +11,7 @@ export * from './asset-middleware';
 export * from './base64';
 export * from './browser';
 export * from './browser-request';
+export * from './email';
 export * from './file';
 export * from './form';
 export * from './helpers';
