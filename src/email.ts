@@ -1,12 +1,6 @@
 import * as nodemailer from 'nodemailer';
+import { emailService } from './email-service';
 
-// TODO next up: use the email bundle key to figure out the dist.json. how to
-// reload dist.json when it changes? read from disk every time? yeah that's the
-// easiest actually. json parsing is fast. but what if you're sending a million
-// emails? yeah fine for now.
-// TODO render the react component and read the linked style files and put into
-// the <style> tag of the html. ignore the boot and app bundles for emails. We
-// only need to have server side rendering for them to work.
 export class Email {
   private _to: string[];
   private _from: string;
@@ -15,6 +9,10 @@ export class Email {
   private _subject: string;
   private _renderImportPath: string;
   private _renderData: any;
+
+  public static create(): Email {
+    return new Email();
+  }
 
   public constructor() {
     this._subject = '';
@@ -38,17 +36,9 @@ export class Email {
     return this;
   }
 
-  public getFrom(): string {
-    return this._from;
-  }
-
   public cc(...addresses: string[]): this {
     this._cc = addresses;
     return this;
-  }
-
-  public getCc(): string {
-    return this._cc.join(', ');
   }
 
   public bcc(...addresses: string[]): this {
@@ -56,17 +46,9 @@ export class Email {
     return this;
   }
 
-  public getBcc(): string {
-    return this._bcc.join(', ');
-  }
-
   public subject(value: string): this {
     this._subject = value;
     return this;
-  }
-
-  public getSubject(): string {
-    return this._subject;
   }
 
   public render(importPath: string, data: any = {}): this {
@@ -75,34 +57,23 @@ export class Email {
     return this;
   }
 
-  public getRenderImportPath(): string {
-    return this._renderImportPath;
+  public async send(): Promise<void> {
+    return emailService.send(this);
   }
 
-  public getRenderData(): any {
-    return this._renderData;
-  }
-
-  public async send() {
-    let transport = nodemailer.createTransport({
-      host: 'email-smtp.us-west-2.amazonaws.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: 'AKIAQHJFZRJCBDB2UCF5',
-        pass: 'BATxSIKVmH/EfuiHCR2G9XivHEnpViXTVHvETWyh4HGA',
-      }
-    });
-
-    await transport.sendMail({
-      from: this._from,
-      to: this._to.join(', '),
-      cc: this._cc.join(', '),
-      bcc: this._bcc.join(', '),
-      subject: this._subject,
-      text: 'hello world',
-      html: '<b>hello world</b>',
-    });
+  public toString(): string {
+    let lines = [];
+    lines.push(`from: ${this._from}`);
+    lines.push(`to: ${this._to.join(', ')}`);
+    if (this._cc.length > 0) {
+      lines.push(`cc: ${this._cc.join(', ')}`);
+    }
+    if (this._bcc.length > 0) {
+      lines.push(`bcc: ${this._bcc.join(', ')}`);
+    }
+    lines.push(`subject: ${this._subject}`);
+    lines.push(`template: ${this._renderImportPath}`);
+    return lines.join('\n');
   }
 }
 

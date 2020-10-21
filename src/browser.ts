@@ -381,9 +381,9 @@ export class Browser {
 
     try {
       let found = await this.app.run(req.parsedUrl.pathname, req);
-
       if (!found) {
-        this.app.fire('notFoundError', [req.parsedUrl.pathname], req);
+        // go to the server since it might be a server only route.
+        window.location.href = url
       }
     } catch(err) {
       let errorEventName: string;

@@ -16,13 +16,15 @@
     "./server-session": "./browser-session",
     "./session-middleware": false,
     "./start": "./start-browser",
-    "./types": false
+    "./types": false,
+    "./html": false
   },
   "dependencies": {
     "@elements/compiler": ">=0.0.0 <0.1.0",
     "@elements/config": ">=0.0.0 <0.1.0",
     "@elements/error": ">=0.0.0 <0.1.0",
     "@elements/json": ">=0.0.0 <0.1.0",
+    "@elements/parse": ">=0.0.0 <0.1.0",
     "@elements/postgres": ">=0.0.0 <0.1.0",
     "@elements/runtime": ">=0.0.0 <0.1.0",
     "@elements/utils": ">=0.0.0 <0.1.0",

@@ -21,6 +21,11 @@
       "version": "0.0.0",
       "kind": "dependencies"
     },
+    "@elements/parse": {
+      "spec": ">=0.0.0 <0.1.0",
+      "version": "0.0.0",
+      "kind": "dependencies"
+    },
     "@elements/postgres": {
       "spec": ">=0.0.0 <0.1.0",
       "version": "0.0.0",
@@ -37,12 +42,12 @@
       "kind": "dependencies"
     },
     "@types/node": {
-      "spec": ">=14.11.8 <14.12.0",
+      "spec": ">=14.11.11 <14.12.0",
       "version": "14.11.11",
       "kind": "devDependencies"
     },
     "@types/react": {
-      "spec": ">=16.9.52 <16.10.0",
+      "spec": ">=16.9.53 <16.10.0",
       "version": "16.9.53",
       "kind": "devDependencies"
     },
@@ -97,7 +102,7 @@
       "kind": "dependencies"
     },
     "ws": {
-      "spec": ">=7.3.0 <7.4.0",
+      "spec": ">=7.3.1 <7.4.0",
       "version": "7.3.1",
       "kind": "dependencies"
     }
@@ -178,7 +183,7 @@
       "0.0.0": {
         "@types/node": {
           "spec": "latest",
-          "version": "14.14.1",
+          "version": "14.14.2",
           "kind": "dependencies"
         },
         "source-map": {
@@ -247,7 +252,7 @@
     },
     "@types/node": {
       "14.11.11": {},
-      "14.14.1": {}
+      "14.14.2": {}
     },
     "@types/prop-types": {
       "15.7.3": {}

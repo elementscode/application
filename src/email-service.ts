@@ -10,6 +10,7 @@ import {
   capitalize,
   diskPath,
 } from '@elements/utils';
+import { Logger } from './logger';
 import { Email } from './email';
 import { debug } from './debug';
 
@@ -37,6 +38,8 @@ class EmailService {
   private opts: IEmailServiceOpts;
   private htmlTemplate: string;
   private distJson: IDistJson;
+  private loaded: boolean;
+  private logger: Logger;
 
   public configure(opts: IEmailServiceOpts): this {
     this.opts = opts;
@@ -46,29 +49,59 @@ class EmailService {
   public load(): this {
     this.loadHtmlTemplate();
     this.readDistJson();
+    this.loaded = true;
+    this.logger = new Logger();
+    this.logger.tag('email', 104);
     return this;
   }
 
-  public async send(email: Email) {
-    let config = findOrCreateAppConfig();
-    let local = reIsDevEnv.test(this.opts.env) || !config.get('smtp');
-    let transport = this.createTransport(local, config);
-    let text = '';
-    let html = '';
+  public async send(email: Email): Promise<void> {
+    if (!this.loaded) {
+      this.load();
+    }
 
-    let info = await transport.sendEmail({
-      from: email.getFrom(),
-      to: email.getTo(),
-      cc: email.getCc(),
-      bcc: email.getBcc(),
-      subject: email.getSubject(),
-      text: text,
+    let config = findOrCreateAppConfig();
+    let defaultFromAddr = config.get('email.from');
+    if (!email['_from'] && typeof defaultFromAddr === 'string') {
+      email.from(defaultFromAddr);
+    }
+
+    this.validate(email);
+
+    let html = this.getHtml(email['_renderImportPath'], email['_renderData']);
+
+    let transport = this.createTransport(config);
+    let info = await transport.sendMail({
+      from: email['_from'],
+      to: email['_to'].join(', '),
+      cc: email['_cc'].join(', '),
+      bcc: email['_bcc'].join(', '),
+      subject: email['_subject'],
       html: html,
     });
 
-    if (local) {
-      console.log(info.messageId);
-      info.message.pipe(process.stdout);
+    this.logger.log('\n' + 'Email sent:\n' + indent(`id: ${info.messageId}`, 2) + '\n' + indent(email.toString(), 2));
+  }
+
+  protected validate(email: Email) {
+    let fromAddr = email['_from'];
+    let toAddr = email['_to'].join(', ');
+    let renderImportPath = email['_renderImportPath'];
+    let missing = [];
+
+    if (!fromAddr) {
+      missing.push('from');
+    }
+    if (!toAddr) {
+      missing.push('to');
+    }
+
+    if (!renderImportPath) {
+      missing.push('render');
+    }
+
+    if (missing.length > 0) {
+      throw new Error(`The email is missing the following method calls: ${missing.join(', ')}. Make sure to call the from, to and render methods of the email in order to send it.`);
     }
   }
 
@@ -89,27 +122,25 @@ class EmailService {
     this.distJson = JSON.parse(fs.readFileSync(distJsonFilePath, 'utf8'));
   }
 
-  protected createTransport(local: boolean, config: Config): any {
-    let transport;
+  protected createTransport(config: Config): any {
+    let local = config.get('email.live', false) == false;
 
     if (local) {
-      transport = nodemailer.createTransport({
+      return nodemailer.createTransport({
         streamTransport: true,
         newline: 'unix',
       });
     } else {
-      transport = nodemailer.createTransport({
-        host: config.getOrThrow('smtp.host'),
-        port: config.get('smtp.port', 465),
+      return nodemailer.createTransport({
+        host: config.getOrThrow('email.host'),
+        port: config.get('email.port', 465),
         secure: true,
         auth: {
-          user: config.getOrThrow('smtp.user'),
-          port: config.getOrThrow('smtp.password'),
+          user: config.getOrThrow('email.user'),
+          pass: config.getOrThrow('email.password'),
         }
       });
     }
-
-    return transport;
   }
 
   protected getHtml<T = any>(key: string, data: T = {} as any): string {
@@ -135,7 +166,7 @@ class EmailService {
 
   protected getStyleHtml(bundle: IDistJsonBundle): string {
     let styleText = bundle.style.map(file => fs.readFileSync(file.path, 'utf8')).join('\n\n');
-    return '<style>\n' + indent(styleText, 4, true) + '\n</style>\n';
+    return '<style>\n' + indent(styleText, 4, false) + '\n</style>\n';
   }
 
   protected getTextFromHtml(html: string): string {
