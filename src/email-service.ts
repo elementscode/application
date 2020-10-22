@@ -163,14 +163,14 @@ class EmailService {
     let body = ReactDOMServer.renderToString(el);
 
     let html: string = this.htmlTemplate;
-    html = html.replace('{{style}}', this.getStyleHtml(bundle));
+    html = html.replace('{{style}}', indent(this.getStyleHtml(bundle), 4, true));
     html = html.replace('{{body}}', indent(body, 4, true));
     return html;
   }
 
   protected getStyleHtml(bundle: IDistJsonBundle): string {
     let styleText = bundle.style.map(file => fs.readFileSync(file.path, 'utf8')).join('\n\n');
-    return '<style>\n' + indent(styleText, 4, false) + '\n</style>\n';
+    return '<style>\n' + '\n' + indent(styleText, 2, false) + '\n</style>\n';
   }
 
   protected getTextFromHtml(html: string): string {
