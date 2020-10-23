@@ -101,7 +101,6 @@ export class Server {
 
     // setup the basics
     this.middleware = new MiddlewareStack();
-    this.logger = new Logger();
 
     // load the app and config
     this.load(this.opts.app);
@@ -155,7 +154,7 @@ export class Server {
     debug('start');
 
     this.httpServer.listen(this.getHttpListenOpts(), () => {
-      let msg = `elements is listening at ${this.url()}.`;
+      let msg = `elements is listening at ${this.url()}.\n`;
       this.logger.success(msg);
     });
 
@@ -178,6 +177,7 @@ export class Server {
     debug('load');
     this.config = findOrCreateAppConfig();
     this.app = app;
+    this.logger = this.createLogger();
     this.loadHtmlTemplate();
     this.readDistJson();
     this.loadMiddleware();
@@ -462,7 +462,7 @@ export class Server {
   }
 
   createLoggerForSession(session: Session): Logger {
-    let logger = new Logger();
+    let logger = this.createLogger();
     if (typeof session == 'undefined') {
       logger.error('session is undefined');
       return logger;
@@ -471,6 +471,10 @@ export class Server {
     let userId = session.userId ? session.userId.slice(0, 5) : '00000';
     logger.tag(`${sessionId}, ${userId}`, userIdColor);
     return logger;
+  }
+
+  createLogger(): Logger {
+    return new Logger({ hideTimeStamps: this.config.get('server.log.hideTimeStamps', false) });
   }
 
   /**
