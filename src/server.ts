@@ -137,7 +137,7 @@ export class Server {
 
   protected getHttpListenOpts(): IHttpListenOptions {
     return {
-      port: this.config.get<number>('server.port', 3000),
+      port: this.config.get<number>('server.port', 4000),
     };
   }
 
