@@ -53,6 +53,9 @@ export class BrowserRequest implements IRequest {
     this.url = opts.url;
     this.parsedUrl = ParsedUrl(opts.url, true /* parse query string */);
     this.params = new ParamsObject();
+    for (let [key, value] of Object.entries(this.parsedUrl.query)) {
+      this.params.set(key, value);
+    }
     this._app = opts.app;
     this._logger = opts.logger;
     this._browser = opts.browser;

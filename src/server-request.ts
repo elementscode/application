@@ -57,10 +57,6 @@ export class ServerRequest implements IRequest {
     return this.req.method;
   }
 
-  public get query(): {[key: string]: any} {
-    return this.parsedUrl.query;
-  }
-
   public get hash(): string {
     return this.parsedUrl.hash;
   }
@@ -72,6 +68,9 @@ export class ServerRequest implements IRequest {
     this.session = opts.session;
     this.parsedUrl = ParsedUrl(this.req.url, true /* parse query string */);
     this.params = new ParamsObject();
+    for (let [key, value] of Object.entries(this.parsedUrl.query)) {
+      this.params.set(key, value);
+    }
     this._htmlTemplate = opts.htmlTemplate;
     this._app = opts.app;
     this._distJson = opts.distJson;

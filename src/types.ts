@@ -42,7 +42,6 @@ export interface IRequest extends IServiceHost {
   parsedUrl: ParsedUrl;
   url: string;
   params: ParamsObject;
-  query: {[key: string]: any};
   hash: string;
   method: string;
   go(url: string, opts?: any);
