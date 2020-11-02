@@ -160,6 +160,7 @@ export class Server {
 
     this.heartBeatIntervalId = this.startHeartBeat();
     process.on('uncaughtException', (err) => this.onUncaughtError(err));
+    process.on('unhandledRejection', (reason, promise) => this.onUnhandledRejection(reason, promise));
     this.app.fire('started', [], this.app);
   }
 
@@ -279,7 +280,11 @@ export class Server {
 
   onUncaughtError(error: Error): void {
     this.logger.error('\n' + indent(error.stack, 2));
-    process.exit(1);
+  }
+
+  onUnhandledRejection(reason: Error | any, promise: any): void {
+    let msg = reason.stack ? reason.stack : String(reason);
+    this.logger.error('\n' + indent(msg, 2));
   }
 
   /**
