@@ -98,7 +98,6 @@ export function createSessionFromCookie(cookie: string, opts: ISessionOptions): 
   session['id'] = deserialized['id'];
   session['userId'] = deserialized['userId'];
   session['userHandle'] = deserialized['userHandle'];
-  session['csrf'] = deserialized['csrf'];
   session['expires'] = deserialized['expires'];
   session['timestamp'] = deserialized['timestamp'];
 
@@ -120,7 +119,6 @@ export function createCookieFromSession(session: Session): string {
   let payload: any = {
     id: session.id,
     userId: session.userId,
-    csrf: session.csrf,
     expires: session.expires,
     timestamp: session.timestamp,
   };

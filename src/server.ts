@@ -153,8 +153,11 @@ export class Server {
   public async start(callback?: () => void): Promise<void> {
     debug('start');
 
-    this.httpServer.listen(this.getHttpListenOpts(), () => {
-      let msg = `elements is listening at ${this.url()}.\n`;
+    let opts = this.getHttpListenOpts();
+    this.httpServer.listen(opts, () => {
+      let port = opts.port;
+      let sslOnOrOff = this.config.equals('server.ssl.on', true) ? ' (ssl)' : '';
+      let msg = `elements is listening on port ${port}${sslOnOrOff}.\n`;
       this.logger.success(msg);
     });
 
@@ -264,8 +267,8 @@ export class Server {
 
   url(): string {
     let addr = this.httpServer.address() as net.AddressInfo;
-    let proto = 'http://';
-    let host = this.opts.env === 'dev' ? 'localhost' : addr.address;
+    let proto = this.config.equals('server.ssl.on', true) ? 'https://' : 'http://';
+    let host = addr.address;
 
     let port: number = this.getHttpListenOpts().port;
     let portLabel: string;
