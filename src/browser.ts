@@ -315,12 +315,6 @@ export class Browser {
    */
   protected createEvents() {
     this.events.push({
-      type: 'DOMContentLoaded',
-      handler: this.onDOMContentLoaded.bind(this),
-      options: { capture: false },
-    });
-
-    this.events.push({
       type: 'click',
       handler: this.onClick.bind(this),
       options: { capture: false },
@@ -349,6 +343,16 @@ export class Browser {
       handler: this.onUnhandledRejection.bind(this),
       options: { capture: false },
     });
+
+    if (document.readyState === 'complete') {
+      this.hydrate();
+    } else {
+      this.events.push({
+        type: 'load',
+        handler: this.onLoad.bind(this),
+        options: { capture: false },
+      });
+    }
 
     this.events.forEach(event => {
       window.addEventListener(event.type, event.handler, event.options);
@@ -392,10 +396,6 @@ export class Browser {
       } else if (err instanceof NotAuthorizedError) {
         errorEventName = 'notAuthorizedError';
       } else {
-        if (err.name == 'NotFoundError' && !(err instanceof NotFoundError)) {
-          console.log('oh crap it doesnt match the imported symbol. why?');
-        }
-
         console.log(err);
         errorEventName = 'unhandledError';
       }
@@ -560,7 +560,12 @@ export class Browser {
     this.run(location.pathname + location.search);
   }
 
-  protected onDOMContentLoaded(e: Event): void {
+  /**
+   * Fires when the dom content is rendered AND all the javascript and
+   * stylesheets are loaded.
+   *
+   */
+  protected onLoad(e: Event): void {
     this.hydrate();
   }
 
