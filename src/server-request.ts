@@ -216,7 +216,7 @@ export class ServerRequest implements IRequest {
     bootBundle.code.forEach(file => {
       if (!visited.has(file.url)) {
         visited.add(file.url);
-        scriptTags.push(`<script type="text/javascript" src="${file.url}" data-loader="ignore" async></script>`);
+        scriptTags.push(`<script type="text/javascript" src="${file.url}" data-loader="ignore"></script>`);
       }
     });
 
