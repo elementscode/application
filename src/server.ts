@@ -517,11 +517,6 @@ export class Server {
           socket.ping(() => {});
         }
       });
-      let numConnectedClients = this.wsServer.clients.size;
-
-      if (numConnectedClients > 0) {
-        this.logger.info('%d connected %s', numConnectedClients, (numConnectedClients > 1) ? 'clients' : 'client');
-      }
     }, HEARTBEAT_INTERVAL);
   }
 
