@@ -21,10 +21,6 @@ export function call<T = any>(host: IServiceHost | Service, method: string, ...a
   });
 }
 
-export function getSession(): Session {
-  return undefined;
-}
-
 export function go(url: string, options: any = {}): void {
   // noop on the server.
 }

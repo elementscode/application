@@ -6,10 +6,6 @@ export function call<T = any>(host: IServiceHost, method: string, ...args: any[]
   return window[BROWSER_KEY].call(method, ...args);
 }
 
-export function getSession(): Session {
-  return window[BROWSER_KEY].getSession();
-}
-
 export function go(url: string, options: any = {}): void {
   return window[BROWSER_KEY].go(url, options);
 }
