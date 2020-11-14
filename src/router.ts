@@ -62,7 +62,7 @@ export class Router implements IRoute {
    * Import another router, optionally at a prefix url.
    *
    */
-  public routes(prefix: string, routeExports?: {default: Router}): this {
+  public routes(prefix: string, routeExports: {default: Router}): this {
     if (typeof routeExports === 'undefined' || !(routeExports.default instanceof Router)) {
       // it might be undefined because it's a server only route.
       return this;
