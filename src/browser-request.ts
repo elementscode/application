@@ -152,7 +152,6 @@ export class BrowserRequest implements IRequest {
       await window['loader'].load(bundleKey, async (): Promise<void> => {
         this.setTitle();
         this.setMeta();
-        let prevBundleKey = this._browser.getCurrentBundleKey();
         this._browser.setCurrentBundleKey(bundleKey);
 
         let view = require(bundleKey).default;
@@ -160,9 +159,10 @@ export class BrowserRequest implements IRequest {
           throw new Error(`Unable to render view because a default view class was not exported from the file ${bundleKey}.`);
         }
 
-        if (bundleKey != prevBundleKey) {
-          ReactDOM.unmountComponentAtNode(document.body.children[0]);
-        }
+        // let prevBundleKey = this._browser.getCurrentBundleKey();
+        // if (bundleKey != prevBundleKey) {
+        ReactDOM.unmountComponentAtNode(document.body.children[0]);
+        // }
         let el = React.createElement(view, attrs);
         ReactDOM.render(el, document.body.children[0]);
         window.scrollTo({ left: 0, top: 0, behavior: 'auto' });
