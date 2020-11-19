@@ -17,9 +17,7 @@ export interface IHeaderMap {
 }
 
 export interface IMetaTag {
-  name?: string;
-  httpEquiv?: string;
-  content: string;
+  [key: string]: string;
 }
 
 export type HeaderValue = string | number | string[] | undefined;
