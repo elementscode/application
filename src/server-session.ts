@@ -136,7 +136,8 @@ export function createCookieFromSession(session: Session): string {
   trailers.push(`Path=/`);
 
   // don't send the cookie when another origin creates a request.
-  trailers.push(`SameSite=Strict`);
+  // note: this won't work with email links to server side routes.
+  // trailers.push(`SameSite=Strict`);
 
   // set the expiry
   if (typeof session.expires !== 'undefined') {
