@@ -165,7 +165,9 @@ export class BrowserRequest implements IRequest {
         // }
         let el = React.createElement(view, attrs);
         ReactDOM.render(el, document.body.children[0]);
-        window.scrollTo({ left: 0, top: 0, behavior: 'auto' });
+        if (!location.hash || location.hash == '') {
+          window.scrollTo({ left: 0, top: 0, behavior: 'auto' });
+        }
       });
     } catch (err) {
       this._browser.renderUnhandledErrorPage(err);
