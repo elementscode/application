@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as url from 'url';
 import * as path from 'path';
 import * as mime from 'mime';
 import { IDistJson, IDistJsonFile, IDistJsonTarget } from '@elements/runtime';
@@ -38,10 +39,11 @@ export class AssetMiddleware {
     let urlPrefixes: string[] = [];
     for (let [targetName, target] of Object.entries(this.distJson.targets)) {
       if (target.url) {
-        urlPrefixes.push(target.url);
-        this.urlAssetInfo.set(target.url, {
+        let urlPath: string = url.parse(target.url).pathname;
+        urlPrefixes.push(urlPath);
+        this.urlAssetInfo.set(urlPath, {
           target: targetName,
-          url: target.url,
+          url: urlPath,
           path: target.path,
         });
       }
