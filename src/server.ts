@@ -190,7 +190,7 @@ export class Server {
   protected loadMiddleware() {
     debug('load middleware');
     this.middleware.clear();
-    this.middleware.add(new AssetMiddleware({ distJson: this.distJson }));
+    this.middleware.add(new AssetMiddleware({ distJson: this.distJson, env: this.opts.env }));
     this.middleware.add(new BodyMiddleware());
     this.middleware.add(new AppMiddleware({app: this.app}));
   }

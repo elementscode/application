@@ -11,6 +11,7 @@ import {
 
 export interface IAssetMiddlewareOpts {
   distJson: IDistJson;
+  env: string;
 }
 
 // 6 months asset expiry
@@ -23,11 +24,13 @@ export interface IUrlAssetInfo {
 }
 
 export class AssetMiddleware {
+  opts: IAssetMiddlewareOpts;
   distJson: IDistJson;
   reUrlPrefix: RegExp;
   urlAssetInfo: Map<string, IUrlAssetInfo>;
 
   constructor(opts: IAssetMiddlewareOpts) {
+    this.opts = opts;
     this.distJson = opts.distJson;
 
     if (typeof this.distJson !== 'object') {
@@ -71,12 +74,14 @@ export class AssetMiddleware {
       return;
     }
 
-    distJsonFile = this.distJson.targets[target].files[filePath];
-    if (!distJsonFile) {
-      debug('this.distJson.targets[%j].files[%j] is undefined', target, filePath);
-      req.status(404);
-      req.end();
-      return;
+    if (this.opts.env === 'dev') {
+      distJsonFile = this.distJson.targets[target].files[filePath];
+      if (!distJsonFile) {
+        debug('this.distJson.targets[%j].files[%j] is undefined', target, filePath);
+        req.status(404);
+        req.end();
+        return;
+      }
     }
 
     req.header('Content-Type', mime.getType(filePath));

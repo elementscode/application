@@ -175,7 +175,7 @@ export class ServerRequest implements IRequest {
     hasher.write(pageBundle.version);
     hasher.write(this._htmlTemplate);
     hasher.write(JSON.stringify(data));
-    return hasher.digest('hex').slice(0, 10);
+    return hasher.digest('hex').slice(0, 20);
   }
 
   protected getHtml<T = any>(key: string, data: T = {} as any): string {
