@@ -28,8 +28,6 @@ and a framework that could handle a large code base, and create a fast user
 experience for our users. A single page app just wouldn't cut it. And we needed
 cold and hot build times to be milliseconds, not 10 minutes.
 
-- *Chris*
-
 ## Installing Elements
 
 ## Creating an Application
