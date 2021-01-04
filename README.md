@@ -1,6 +1,6 @@
 ![Elements](https://github.com/elementscode/application/blob/master/assets/dark.png?raw=true)
 <br/>
-<h3>The app framework and build tool for TypeScript.</h3>
+<h3>The app framework for TypeScript.</h3>
 
 ## Introduction
 Elements lets you build full stack, scalable web apps in TypeScript, with an
