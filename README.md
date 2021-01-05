@@ -183,6 +183,14 @@ app.routes('/api/v1', require('app/routes/api/v1'));
 // Create http verb routes and use the json method to send back json.
 router.route('get', '/products/:id', async function(this: IRequest) {
   let product = await getProduct(this.params.get('id'));
+  
+  // set the http status code.
+  this.status(200);
+  
+  // set http headers.
+  this.header('X-PoweredBy', 'elements');
+  
+  // serialize object to json and send to the client.
   this.json(product);
 });
 ```
@@ -441,14 +449,8 @@ update existing tables, and to generally update the database.
 
 ```bash
 > elements create migration
-```
-```bash
 > elements migrate status
-```
-```bash
 > elements migrate up
-```
-```bash
 > elements migrate down
 ```
 
