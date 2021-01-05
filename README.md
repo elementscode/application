@@ -89,8 +89,6 @@ and version. If you prefer, you can also use npm or yarn.
 
 ```bash
 > elements install
-```
-```bash
 > elements install @elements/application:1.0.0
 ```
 
@@ -115,11 +113,7 @@ when project files change.
 
 ```bash
 > elements build
-```
-```bash
 > elements build -tgz > dist.tgz
-```
-```bash
 > elements build -watch
 ```
 
