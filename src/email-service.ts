@@ -112,7 +112,7 @@ class EmailService {
   protected loadHtmlTemplate(): void {
     try {
       // try using config/email.html first
-      let filePath = path.join(process.cwd(), 'config', 'email.html');
+      let filePath = path.join(process.cwd(), 'app', 'emails', 'email.html');
       this.htmlTemplate = fs.readFileSync(filePath, 'utf8');
     } catch(err) {
       // if it doesn't exist then use the default

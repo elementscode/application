@@ -570,7 +570,7 @@ export class Server {
   loadHtmlTemplate() {
     try {
       // try using config/app.html first
-      let filePath = path.join(process.cwd(), 'config', 'app.html');
+      let filePath = path.join(process.cwd(), 'app', 'pages', 'app.html');
       this.htmlTemplate = fs.readFileSync(filePath, 'utf8');
     } catch(err) {
       // if it doesn't exist then use the default
