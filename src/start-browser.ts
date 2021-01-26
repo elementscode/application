@@ -42,7 +42,7 @@ function getAppFromCallback(callback: () => Application | { default: Application
   }
 
   if (typeof app === 'undefined') {
-    throw new Error(`start(() => require('app')) callback did not return an Application.`)
+    throw new Error("start(() => require('app')) callback did not return an Application.")
   }
 
   return app;

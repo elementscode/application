@@ -30,8 +30,8 @@
     "@elements/utils": ">=0.0.0 <0.1.0",
     "base64-url": ">=2.3.3 <2.4.0",
     "debug": ">=4.1.1 <4.2.0",
-    "mime": ">=2.4.6 <2.5.0",
-    "nodemailer": ">=6.4.14 <6.5.0",
+    "mime": ">=2.4.7 <2.5.0",
+    "nodemailer": ">=6.4.17 <6.5.0",
     "path-to-regexp": ">=6.1.0 <6.2.0",
     "url-parse": ">=1.4.7 <1.5.0",
     "uuid": ">=8.1.0 <8.2.0",
@@ -43,13 +43,7 @@
   },
   "devDependencies": {
     "@types/node": ">=14.11.11 <14.12.0",
-    "@types/react": ">=16.9.53 <16.10.0",
-    "@types/react-dom": ">=16.9.8 <16.10.0"
-  },
-  "scripts": {
-    "clean": "rm -rf .elements/dist",
-    "copyfiles": "mkdir -p .elements/dist && cp README.md LICENSE.txt package.json .elements/dist",
-    "build": "yarn run clean && yarn run copyfiles && tsc",
-    "build:watch": "yarn run clean && yarn run copyfiles && tsc --watch"
+    "@types/react": ">=16.9.56 <16.10.0",
+    "@types/react-dom": ">=16.9.10 <16.10.0"
   }
 }
