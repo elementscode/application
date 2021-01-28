@@ -5,21 +5,16 @@
 ## Introduction
 Elements lets you build full stack, scalable web apps in TypeScript, with an
 insanely productive developer experience. It's the modern Ruby on Rails for
-TypeScript and CSS, combining an application framework with fast build tooling.
-It let's you create a modern app without compromising between the server and browser.
+TypeScript and CSS, combining an app framework with fast build tooling.
 
-Elements is built for TypeScript apps. But you can start with JavaScript and
-adopt TypeScript incrementally. The Elements tooling makes it all just work,
-even if you start with JavaScript and move to TypeScript later.
-
-The app framework lets you write your React pages like you always have. Define
-routes in code using a simple api, telling Elements which component to render
-and passing initial data. Get server data by simply importing and calling
-functions. Automatically get server and browser routing and rendering, asset
-urls transformed to cdn urls, data fetching that works the same way on the
-initial render and in the browser. Create http api routes just as easily as
-creating pages. Use Postgres out of the box and work with strongly typed rows of
-data instead of with models.
+The app framework lets you write React pages like you always have. Define routes
+in code using a simple api, telling Elements which component to render and
+passing initial data. Get server data by simply importing and calling functions.
+Automatically get server and browser routing and rendering, asset urls
+transformed to cdn urls, data fetching that works the same way on the initial
+render and in the browser. Create http api routes just as easily as creating
+pages. Use Postgres out of the box and work with strongly typed rows of data
+instead of with models.
 
 Elements build is zero config and just works out of the box for the server and
 browser. It compiles TypeScript, React and CSS, links browser assets and creates
@@ -55,8 +50,6 @@ Learn more: <a href="https://elements.dev">https://elements.dev</a>.
 
 ## People
 Come hang out with other Elements people <a href="https://people.elements.dev">here</a>.
-
-Or send me an email and say hello: <a href="mailto:chris@elements.dev?subject=@elements/application">chris@elements.dev</a>
 
 ## Quick Start
 ```bash
