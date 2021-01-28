@@ -1,12 +1,12 @@
 ![Elements](https://github.com/elementscode/application/blob/master/assets/dark.png?raw=true)
 <br/>
-<h3>The app framework for TypeScript.</h3>
+<h3>The web app framework for builders.</h3>
 
 ## Introduction
 Elements lets you build full stack, scalable web apps in TypeScript, with an
 insanely productive developer experience. It's the modern Ruby on Rails for
 TypeScript and CSS, combining an application framework with fast build tooling.
-Create a modern app without compromising between the server and browser.
+It let's you create a modern app without compromising between the server and browser.
 
 Elements is built for TypeScript apps. But you can start with JavaScript and
 adopt TypeScript incrementally. The Elements tooling makes it all just work,
@@ -60,20 +60,13 @@ Or send me an email and say hello: <a href="mailto:chris@elements.dev?subject=@e
 
 ## Quick Start
 ```bash
-> elements create app demo && cd demo
+> elements create app demo
+> cd demo
 > elements install
 > elements start
 ```
 
-Try this:
-  1. open http://localhost:4000
-  2. update some html text in *app/pages/home/index.tsx* and save the file to see the hot reload
-  3. add `color: green` to the css rule in *app/pages/home/index.css* and save the file to see the hot reload
-  4. look at *app/index.ts* to see the main app file
-  5. look at *app/routes/main/index.ts* to see the page routes
-  6. look at *app/routes/api/v1/index.ts* to see api routes
-  7. look at *app/services/index.ts* to see the service functions
-
+Check out the [starter](https://github.com/elementscode/starter) project for some boilerplate to get you started with a default app using tailwindcss.
 
 ## Troubleshoot File Descriptor Limits
 The most common initial problem is that your file descriptor limit is too low. If you get an error that looks like this when you start the app, you need to increase your file descriptor limit so the file watcher can watch your project for file changes.
