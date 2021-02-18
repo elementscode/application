@@ -1,7 +1,7 @@
 {
   "name": "@elements/application",
   "description": "The elements web app framework.",
-  "version": "1.0.0-alpha.106",
+  "version": "1.0.0-alpha.107",
   "license": "SEE LICENSE IN LICENSE.txt",
   "browser": {
     "./app-middleware": false,
@@ -20,14 +20,14 @@
     "./html": false
   },
   "dependencies": {
-    "@elements/compiler": "1.0.0-alpha.106",
-    "@elements/config": "1.0.0-alpha.106",
-    "@elements/error": "1.0.0-alpha.106",
-    "@elements/json": "1.0.0-alpha.106",
-    "@elements/parse": "1.0.0-alpha.106",
-    "@elements/postgres": "1.0.0-alpha.106",
-    "@elements/runtime": "1.0.0-alpha.106",
-    "@elements/utils": "1.0.0-alpha.106",
+    "@elements/compiler": "1.0.0-alpha.107",
+    "@elements/config": "1.0.0-alpha.107",
+    "@elements/error": "1.0.0-alpha.107",
+    "@elements/json": "1.0.0-alpha.107",
+    "@elements/parse": "1.0.0-alpha.107",
+    "@elements/postgres": "1.0.0-alpha.107",
+    "@elements/runtime": "1.0.0-alpha.107",
+    "@elements/utils": "1.0.0-alpha.107",
     "base64-url": ">=2.3.3 <2.4.0",
     "debug": ">=4.1.1 <4.2.0",
     "mime": ">=2.4.7 <2.5.0",
