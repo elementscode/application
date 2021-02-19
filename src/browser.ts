@@ -1,5 +1,3 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { parse, stringify } from '@elements/json';
 import { SqlResult } from '@elements/postgres/sql-result';
 import {
@@ -302,12 +300,12 @@ export class Browser {
     }
 
     let key = viewMetaEl.content;
+    this.setCurrentBundleKey(key);
+
     let exports = require(key);
     let view = exports.default;
-    let el = React.createElement(view, attrs);
-    debug('hydrate %s', key);
-    this.setCurrentBundleKey(key);
-    ReactDOM.hydrate(el, document.body.children[0]);
+    let engine = this.app.findRenderEngineOrThrow(view, key);
+    engine.hydrate(view, attrs, document.body.children[0]);
   }
 
   /**

@@ -1,5 +1,3 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import * as ParsedUrl from 'url-parse';
 import { stringify } from '@elements/json';
 import { ParamsObject } from './params-object';
@@ -158,13 +156,18 @@ export class BrowserRequest implements IRequest {
         if (!view) {
           throw new Error(`Unable to render view because a default view class was not exported from the file ${bundleKey}.`);
         }
+        let engine = this._app.findRenderEngineOrThrow(view, bundleKey);
+        let prevBundleKey = this._browser.getCurrentBundleKey();
+        if (prevBundleKey && prevBundleKey != bundleKey) {
+          engine.detach(document.body.children[0]);
+        }
 
-        // let prevBundleKey = this._browser.getCurrentBundleKey();
-        // if (bundleKey != prevBundleKey) {
-        ReactDOM.unmountComponentAtNode(document.body.children[0]);
-        // }
-        let el = React.createElement(view, attrs);
-        ReactDOM.render(el, document.body.children[0]);
+        if (prevBundleKey && prevBundleKey == bundleKey) {
+          engine.update(view, attrs, document.body.children[0]);
+        } else {
+          engine.attach(view, attrs, document.body.children[0]);
+        }
+
         if (!location.hash || location.hash == '') {
           window.scrollTo({ left: 0, top: 0, behavior: 'auto' });
         }
