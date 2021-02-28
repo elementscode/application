@@ -1,7 +1,7 @@
 import * as html from '@elements/html';
 import { IRenderEngine } from '../types';
 
-export default class RenderHtmlEngine implements IRenderEngine {
+export default class HtmlRenderEngine implements IRenderEngine {
   constructor(opts: any = {}) {}
 
   match(ctor: any): boolean {

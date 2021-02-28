@@ -3,7 +3,7 @@ import * as ReactDOMServer from 'react-dom/server';
 import * as ReactDOM from 'react-dom';
 import { IRenderEngine } from '../types';
 
-export default class RenderReactEngine implements IRenderEngine {
+export default class ReactRenderEngine implements IRenderEngine {
   constructor(opts: any = {}) {
   }
 

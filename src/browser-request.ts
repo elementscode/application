@@ -14,8 +14,6 @@ import {
   IGoOpts,
 } from './types';
 
-let version = '0';
-
 export interface IBrowserRequestOpts {
   app: Application;
   browser: Browser;
