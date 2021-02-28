@@ -14,6 +14,8 @@ import {
   IGoOpts,
 } from './types';
 
+let version = '0';
+
 export interface IBrowserRequestOpts {
   app: Application;
   browser: Browser;
@@ -138,7 +140,7 @@ export class BrowserRequest implements IRequest {
   }
 
   /**
-   * Renders a view to the page.
+   * Renders a page component.
    *
    * @param bundleKey - The bundle key.
    * @param [attrs] - Initial data attributes for the view.
@@ -150,23 +152,16 @@ export class BrowserRequest implements IRequest {
       await window['loader'].load(bundleKey, async (): Promise<void> => {
         this.setTitle();
         this.setMeta();
-        this._browser.setCurrentBundleKey(bundleKey);
 
-        let view = require(bundleKey).default;
-        if (!view) {
-          throw new Error(`Unable to render view because a default view class was not exported from the file ${bundleKey}.`);
+        let ctor = require(bundleKey).default;
+        if (!ctor) {
+          throw new Error(`Unable to render page because a default component class was not exported from the file ${bundleKey}.`);
         }
-        let engine = this._app.findRenderEngineOrThrow(view, bundleKey);
+        let engine = this._app.findRenderEngineOrThrow(ctor, bundleKey);
         let prevBundleKey = this._browser.getCurrentBundleKey();
-        if (prevBundleKey && prevBundleKey != bundleKey) {
-          engine.detach(document.body.children[0]);
-        }
-
-        if (prevBundleKey && prevBundleKey == bundleKey) {
-          engine.update(view, attrs, document.body.children[0]);
-        } else {
-          engine.attach(view, attrs, document.body.children[0]);
-        }
+        engine.detach(this._browser.getCurrentPage(), document.body.children[0]);
+        let component = engine.attach(ctor, attrs, document.body.children[0]);
+        this._browser.setCurrentPage(bundleKey, component);
 
         if (!location.hash || location.hash == '') {
           window.scrollTo({ left: 0, top: 0, behavior: 'auto' });

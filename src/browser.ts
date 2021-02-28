@@ -85,6 +85,11 @@ export class Browser {
   protected started: boolean;
 
   /**
+   * The current page's rendered component instance.
+   */
+  protected page: any;
+
+  /**
    * The current page's bundle key (e.g. app/views/home/index.tsx).
    */
   protected currentBundleKey: string;
@@ -300,12 +305,11 @@ export class Browser {
     }
 
     let key = viewMetaEl.content;
-    this.setCurrentBundleKey(key);
-
     let exports = require(key);
-    let view = exports.default;
-    let engine = this.app.findRenderEngineOrThrow(view, key);
-    engine.hydrate(view, attrs, document.body.children[0]);
+    let ctor = exports.default;
+    let engine = this.app.findRenderEngineOrThrow(ctor, key);
+    let component = engine.hydrate(ctor, attrs, document.body.children[0]);
+    this.setCurrentPage(key, component);
   }
 
   /**
@@ -449,10 +453,13 @@ export class Browser {
   }
 
   /**
-   * Sets the current page's bundle key.
+   * Sets the currently rendered page component instance.
    */
-  public setCurrentBundleKey(key: string): this {
-    this.currentBundleKey = key;
+  public setCurrentPage(bundleKey: string, value: any): this {
+    this.currentBundleKey = bundleKey;
+    this.page = value;
+    // to make it easier to tinker in the browser console.
+    window['page'] = this.page;
     return this;
   }
 
@@ -461,6 +468,13 @@ export class Browser {
    */
   public getCurrentBundleKey(): string | undefined {
     return this.currentBundleKey;
+  }
+
+  /**
+   * Returns the currently rendered page component instance.
+   */
+  public getCurrentPage(): any {
+    return this.page;
   }
 
   /**

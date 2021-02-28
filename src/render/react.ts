@@ -1,13 +1,14 @@
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import * as ReactDOM from 'react-dom';
+import { IRenderEngine } from '../types';
 
-export default class ReactRenderEngine {
+export default class RenderReactEngine implements IRenderEngine {
   constructor(opts: any = {}) {
   }
 
   match(component: any): boolean {
-    return typeof component.$type === 'undefined';
+    return component && component.$type !== 'Template' && component.prototype && typeof component.prototype.render === 'function';
   }
 
   toString(component: any, data: any): string {
@@ -18,8 +19,9 @@ export default class ReactRenderEngine {
     ReactDOM.hydrate(React.createElement(component, data), parent);
   }
 
-  attach(component: any, data: any, parent: Element | DocumentFragment): void {
+  attach(component: any, data: any, parent: Element | DocumentFragment): any {
     ReactDOM.render(React.createElement(component, data), parent);
+    return component;
   }
 
   update(component: any, data: any, parent: Element | DocumentFragment): void {
@@ -28,7 +30,7 @@ export default class ReactRenderEngine {
     ReactDOM.render(React.createElement(component, data), parent);
   }
 
-  detach(parent: Element | DocumentFragment): void {
+  detach(component: any, parent: Element | DocumentFragment): void {
     ReactDOM.unmountComponentAtNode(parent);
   }
 }
