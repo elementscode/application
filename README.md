@@ -92,7 +92,7 @@ notice.
 ```
 
 ### Build
-You an use the build command independently on any JavaScript or TypeScript
+You can use the build command independently on any JavaScript or TypeScript
 project. It's also useful when you're working on a package. You can write the
 build as a gzipped tarball to stdout. And you can build in watch mode to rebuild
 when project files change.
