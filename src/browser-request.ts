@@ -157,8 +157,8 @@ export class BrowserRequest implements IRequest {
         }
         let engine = this._app.findRenderEngineOrThrow(ctor, bundleKey);
         let prevBundleKey = this._browser.getCurrentBundleKey();
-        engine.detach(this._browser.getCurrentPage(), document.body.children[0]);
-        let component = engine.attach(ctor, attrs, document.body.children[0]);
+        engine.remove(this._browser.getCurrentPage(), document.body.children[0]);
+        let component = engine.insert(ctor, attrs, document.body.children[0]);
         this._browser.setCurrentPage(bundleKey, component);
 
         if (!location.hash || location.hash == '') {

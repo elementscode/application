@@ -8,23 +8,23 @@ export default class HtmlRenderEngine implements IRenderEngine {
     return ctor && (ctor.$type === 'Component');
   }
 
-  toString(ctor: typeof html.Component, data: any): string {
+  toHTML(ctor: typeof html.Component, data: any): string {
     return html.toHTML(ctor, data);
-  }
-
-  hydrate(ctor: typeof html.Component, data: any, parent: Element | DocumentFragment): any {
-    return html.hydrate(ctor, data, parent);
   }
 
   attach(ctor: typeof html.Component, data: any, parent: Element | DocumentFragment): any {
     return html.attach(ctor, data, parent);
   }
 
-  update(cmp: html.Component, data: any, parent: Element | DocumentFragment): any {
-    return html.update(cmp, data, parent);
+  insert(ctor: typeof html.Component, data: any, parent: Element | DocumentFragment): any {
+    return html.insert(ctor, data, parent);
   }
 
-  detach(cmp: html.Component, parent: Element | DocumentFragment): any {
-    return html.detach(cmp, parent);
+  update(cmp: html.Component, data: any, parent: Element | DocumentFragment): void {
+    html.update(cmp, data, parent);
+  }
+
+  remove(cmp: html.Component, parent: Element | DocumentFragment): void {
+    html.remove(cmp, parent);
   }
 }

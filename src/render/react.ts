@@ -11,26 +11,28 @@ export default class ReactRenderEngine implements IRenderEngine {
     return component && component.$type !== 'Template' && component.prototype && typeof component.prototype.render === 'function';
   }
 
-  toString(component: any, data: any): string {
+  toHTML(component: any, data: any): string {
     return ReactDOMServer.renderToString(React.createElement(component, data));
   }
 
-  hydrate(component: any, data: any, parent: Element | DocumentFragment): void {
-    ReactDOM.hydrate(React.createElement(component, data), parent);
+  attach(component: any, data: any, parent: Element | DocumentFragment): any {
+    let el = React.createElement(component, data);
+    ReactDOM.hydrate(el, parent);
+    return el;
   }
 
-  attach(component: any, data: any, parent: Element | DocumentFragment): any {
-    ReactDOM.render(React.createElement(component, data), parent);
-    return component;
+  insert(component: any, data: any, parent: Element | DocumentFragment): any {
+    let el = React.createElement(component, data);
+    ReactDOM.render(el, parent);
+    return el;
   }
 
   update(component: any, data: any, parent: Element | DocumentFragment): void {
-    // note: react will automatically update instead of replace if the existing
-    // component is the same one.
-    ReactDOM.render(React.createElement(component, data), parent);
+    // todo will this work?
+    component.setState(data);
   }
 
-  detach(component: any, parent: Element | DocumentFragment): void {
+  remove(component: any, parent: Element | DocumentFragment): void {
     ReactDOM.unmountComponentAtNode(parent);
   }
 }

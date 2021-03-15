@@ -282,9 +282,9 @@ export class Browser {
   }
 
   /**
-   * Hydrates a server rendered page.
+   * Attaches to a server rendered page.
    */
-  protected hydrate() {
+  protected attach() {
     let viewMetaEl = <HTMLMetaElement>document.querySelector('meta[name="elements:bundle"]');
     let dataMetaEl = <HTMLMetaElement>document.querySelector('meta[name="elements:data"]');
 
@@ -308,7 +308,7 @@ export class Browser {
     let exports = require(key);
     let ctor = exports.default;
     let engine = this.app.findRenderEngineOrThrow(ctor, key);
-    let component = engine.hydrate(ctor, attrs, document.body.children[0]);
+    let component = engine.attach(ctor, attrs, document.body.children[0]);
     this.setCurrentPage(key, component);
   }
 
@@ -347,7 +347,7 @@ export class Browser {
     });
 
     if (document.readyState === 'complete') {
-      this.hydrate();
+      this.attach();
     } else {
       this.events.push({
         type: 'load',
@@ -578,7 +578,7 @@ export class Browser {
    *
    */
   protected onLoad(e: Event): void {
-    this.hydrate();
+    this.attach();
   }
 
   /**

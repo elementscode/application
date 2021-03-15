@@ -249,7 +249,7 @@ export class ServerRequest implements IRequest {
     let exports = require(viewFilePath);
     let view = exports.default;
     let engine = this._app.findRenderEngineOrThrow(view, viewFilePath);
-    let body = engine.toString(view, data);
+    let body = engine.toHTML(view, data);
 
     let html: string = this._htmlTemplate;
     html = html.replace('{{title}}', `<title>${this.title()}</title>`);
