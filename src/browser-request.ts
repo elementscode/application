@@ -1,5 +1,3 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import * as ParsedUrl from 'url-parse';
 import { stringify } from '@elements/json';
 import { ParamsObject } from './params-object';
@@ -140,7 +138,7 @@ export class BrowserRequest implements IRequest {
   }
 
   /**
-   * Renders a view to the page.
+   * Renders a page component.
    *
    * @param bundleKey - The bundle key.
    * @param [attrs] - Initial data attributes for the view.
@@ -152,19 +150,17 @@ export class BrowserRequest implements IRequest {
       await window['loader'].load(bundleKey, async (): Promise<void> => {
         this.setTitle();
         this.setMeta();
-        this._browser.setCurrentBundleKey(bundleKey);
 
-        let view = require(bundleKey).default;
-        if (!view) {
-          throw new Error(`Unable to render view because a default view class was not exported from the file ${bundleKey}.`);
+        let ctor = require(bundleKey).default;
+        if (!ctor) {
+          throw new Error(`Unable to render page because a default component class was not exported from the file ${bundleKey}.`);
         }
+        let engine = this._app.findRenderEngineOrThrow(ctor, bundleKey);
+        let prevBundleKey = this._browser.getCurrentBundleKey();
+        engine.remove(this._browser.getCurrentPage(), document.body.children[0]);
+        let component = engine.insert(ctor, attrs, document.body.children[0]);
+        this._browser.setCurrentPage(bundleKey, component);
 
-        // let prevBundleKey = this._browser.getCurrentBundleKey();
-        // if (bundleKey != prevBundleKey) {
-        ReactDOM.unmountComponentAtNode(document.body.children[0]);
-        // }
-        let el = React.createElement(view, attrs);
-        ReactDOM.render(el, document.body.children[0]);
         if (!location.hash || location.hash == '') {
           window.scrollTo({ left: 0, top: 0, behavior: 'auto' });
         }

@@ -17,7 +17,9 @@
     "./session-middleware": false,
     "./start": "./start-browser",
     "./types": false,
-    "./html": false
+    "./html": false,
+    "./service": false,
+    "react-dom/server": false
   },
   "dependencies": {
     "@elements/compiler": "1.0.0-alpha.108",

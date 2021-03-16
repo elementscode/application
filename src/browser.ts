@@ -1,5 +1,3 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { parse, stringify } from '@elements/json';
 import { SqlResult } from '@elements/postgres/sql-result';
 import {
@@ -85,6 +83,11 @@ export class Browser {
    * Whether the browser host has started.
    */
   protected started: boolean;
+
+  /**
+   * The current page's rendered component instance.
+   */
+  protected page: any;
 
   /**
    * The current page's bundle key (e.g. app/views/home/index.tsx).
@@ -279,9 +282,9 @@ export class Browser {
   }
 
   /**
-   * Hydrates a server rendered page.
+   * Attaches to a server rendered page.
    */
-  protected hydrate() {
+  protected attach() {
     let viewMetaEl = <HTMLMetaElement>document.querySelector('meta[name="elements:bundle"]');
     let dataMetaEl = <HTMLMetaElement>document.querySelector('meta[name="elements:data"]');
 
@@ -303,11 +306,10 @@ export class Browser {
 
     let key = viewMetaEl.content;
     let exports = require(key);
-    let view = exports.default;
-    let el = React.createElement(view, attrs);
-    debug('hydrate %s', key);
-    this.setCurrentBundleKey(key);
-    ReactDOM.hydrate(el, document.body.children[0]);
+    let ctor = exports.default;
+    let engine = this.app.findRenderEngineOrThrow(ctor, key);
+    let component = engine.attach(ctor, attrs, document.body.children[0]);
+    this.setCurrentPage(key, component);
   }
 
   /**
@@ -345,7 +347,7 @@ export class Browser {
     });
 
     if (document.readyState === 'complete') {
-      this.hydrate();
+      this.attach();
     } else {
       this.events.push({
         type: 'load',
@@ -451,10 +453,13 @@ export class Browser {
   }
 
   /**
-   * Sets the current page's bundle key.
+   * Sets the currently rendered page component instance.
    */
-  public setCurrentBundleKey(key: string): this {
-    this.currentBundleKey = key;
+  public setCurrentPage(bundleKey: string, value: any): this {
+    this.currentBundleKey = bundleKey;
+    this.page = value;
+    // to make it easier to tinker in the browser console.
+    window['page'] = this.page;
     return this;
   }
 
@@ -463,6 +468,13 @@ export class Browser {
    */
   public getCurrentBundleKey(): string | undefined {
     return this.currentBundleKey;
+  }
+
+  /**
+   * Returns the currently rendered page component instance.
+   */
+  public getCurrentPage(): any {
+    return this.page;
   }
 
   /**
@@ -566,7 +578,7 @@ export class Browser {
    *
    */
   protected onLoad(e: Event): void {
-    this.hydrate();
+    this.attach();
   }
 
   /**

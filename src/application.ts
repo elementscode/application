@@ -1,3 +1,5 @@
+import { StandardError } from '@elements/error';
+import ReactRenderEngine from './render/react';
 import { RouteHandler } from './route';
 import { Router } from './router';
 import { EventSystem } from './events';
@@ -6,6 +8,7 @@ import {
   IRoute,
   IMetaTag,
   ErrorCallback,
+  IRenderEngine,
 } from './types';
 
 export type ServerAppCallback = (app: Application) => any;
@@ -17,6 +20,7 @@ export class Application implements IRoute {
   private _router: Router;
   private _events: EventSystem;
   public prefix?: string;
+  private _renderEngines: IRenderEngine[];
 
   public constructor() {
     this._router = new Router();
@@ -24,6 +28,25 @@ export class Application implements IRoute {
     this._title = '';
     this._description = '';
     this._events = new EventSystem();
+    this._renderEngines = [
+      new ReactRenderEngine(),
+    ];
+  }
+
+  public addRenderEngine(engine: IRenderEngine): this {
+    this._renderEngines.push(engine);
+    return this;
+  }
+
+  public findRenderEngineOrThrow(component: any, filePath: string): IRenderEngine {
+    for (let engine of this._renderEngines) {
+      if (engine.match(component)) {
+        return engine;
+      }
+    }
+    
+    throw StandardError.create(`No render engine found for ${filePath}.`)
+      .suggest(`You can add a rendering engine using the app.addRenderEngine(...) method.`);
   }
 
   public title(value?: string): string {

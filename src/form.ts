@@ -16,7 +16,7 @@ export async function getFormData<T = any>(form: HTMLFormElement): Promise<T> {
         break;
 
       case 'checkbox':
-        set(result, el.name, el.value == 'on' ? true : false);
+        push(result, el.name, el.value);
         break;
 
       case 'select-multiple':
@@ -80,6 +80,48 @@ async function setFromFile(result: any, el: any): Promise<void> {
 
     if (refs == 0) {
       resolve();
+    }
+  });
+}
+
+async function readFiles(selector: string): Promise<File[]> {
+  return new Promise((resolve, reject) => {
+    let el = document.querySelector(selector) as HTMLInputElement;
+
+    if (!el || el.type !== 'file') {
+      resolve([]);
+      return;
+    }
+
+    let refs = 0;
+    let result: File[] = [];
+
+    function loadFile(f, callback) {
+      refs++;
+
+      let reader = new FileReader();
+      let file = new File(f.name);
+      file.size = f.size;
+      file.type = f.type;
+      callback(file);
+
+      reader.onerror = (e) => reject(reader.error);
+      reader.onload = (e) => {
+        file.body = new Uint8Array(e.target.result as ArrayBuffer);
+        refs--;
+        if (refs == 0) {
+          resolve(result);
+        }
+      }
+      reader.readAsArrayBuffer(f);
+    }
+
+    for (let idx = 0; idx < el.files.length; idx++) {
+      loadFile(el.files[idx], (file => result.push(file)));
+    }
+
+    if (refs == 0) {
+      resolve(result);
     }
   });
 }

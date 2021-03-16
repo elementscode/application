@@ -121,3 +121,12 @@ export interface IServiceHost {
   getSession?: () => Session;
   getLogger?: () => Logger;
 }
+
+export interface IRenderEngine {
+  match(component: any): boolean;
+  toHTML(component: any, data: any): string;
+  attach(component: any, data: any, parent: Element | DocumentFragment): any;
+  insert(component: any, data: any, parent: Element | DocumentFragment): any;
+  update(component: any, data: any, parent: Element | DocumentFragment): void;
+  remove(component: any, parent: Element | DocumentFragment): void;
+}

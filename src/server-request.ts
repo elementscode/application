@@ -1,8 +1,6 @@
 import * as path from 'path';
 import * as http from 'http';
 import * as crypto from 'crypto';
-import * as React from 'react';
-import * as ReactDOMServer from 'react-dom/server';
 import * as ParsedUrl from 'url-parse';
 import { IDistJson, IDistJsonBundle, IDistJsonBundleFile } from '@elements/runtime';
 import { stringify } from '@elements/json';
@@ -250,8 +248,8 @@ export class ServerRequest implements IRequest {
     let viewFilePath = path.join(process.cwd(), distRelPath);
     let exports = require(viewFilePath);
     let view = exports.default;
-    let el = React.createElement(view, data);
-    let body = ReactDOMServer.renderToString(el);
+    let engine = this._app.findRenderEngineOrThrow(view, viewFilePath);
+    let body = engine.toHTML(view, data);
 
     let html: string = this._htmlTemplate;
     html = html.replace('{{title}}', `<title>${this.title()}</title>`);
