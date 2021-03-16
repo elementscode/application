@@ -1,4 +1,5 @@
 import { StandardError } from '@elements/error';
+import ReactRenderEngine from './render/react';
 import { RouteHandler } from './route';
 import { Router } from './router';
 import { EventSystem } from './events';
@@ -27,7 +28,9 @@ export class Application implements IRoute {
     this._title = '';
     this._description = '';
     this._events = new EventSystem();
-    this._renderEngines = [];
+    this._renderEngines = [
+      new ReactRenderEngine(),
+    ];
   }
 
   public addRenderEngine(engine: IRenderEngine): this {
